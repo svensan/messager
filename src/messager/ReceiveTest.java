@@ -17,7 +17,7 @@ public class ReceiveTest {
 
      
      FileReceiver r  = new FileReceiver(13267,"10.0.1.7",
-             "/Users/maxoliveberg/receiver.rtf");
+             "/Users/maxoliveberg/biggoydos.jar");
      
      
      }

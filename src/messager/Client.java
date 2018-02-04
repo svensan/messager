@@ -4,6 +4,7 @@ import java.awt.Color;
 import static java.awt.Color.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Client implements MessageReceiver {
 
@@ -13,6 +14,7 @@ public class Client implements MessageReceiver {
     boolean isAdmin;
     private ChatWindow window;
     Color textColor;
+    private ServerMultipart server;
 
     public Client(boolean admin) {
         haveSetName = false;
@@ -27,6 +29,28 @@ public class Client implements MessageReceiver {
     public void setColor(Color aC){
         
         textColor = aC;
+    }
+    
+    public void setServer(ServerMultipart aServer){
+        server = aServer;
+    }
+    
+    public boolean checkIP(String ip){
+        
+        ArrayList<String> repList = server.getIPs();
+        
+       // System.out.println("replist size: " +repList.size());
+        for(int i = 0; i < repList.size();i++){
+            //System.out.println("replist size: " +repList.size());
+           // System.out.println(repList.get(i));
+            if(repList.get(i).equals(ip)){
+              //  System.out.println("ip found");
+                return true;
+            }
+        }
+        System.out.println("ip not found");
+        return false;
+        
     }
     public void getConnection(String host, int port) {
         if (haveSetName) {

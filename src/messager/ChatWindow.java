@@ -9,6 +9,8 @@ import java.awt.*;
 import static java.awt.Color.blue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import javafx.stage.FileChooser;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
@@ -31,6 +33,7 @@ public class ChatWindow {
     
     JButton closeButton;
     JButton sendFileButton;
+    JButton colorButton;
     
     JTextField textField;
     
@@ -39,7 +42,7 @@ public class ChatWindow {
     ChatWindow(Client creator){
         
         user = creator;
-        
+       // ReceiveWindow meme = new ReceiveWindow("jewlord",6969);
         mainFrame = new JFrame();
         mainPanel = new JPanel(new GridBagLayout());
         
@@ -53,6 +56,13 @@ public class ChatWindow {
                          {
                              SendWindow sWindow = new SendWindow(true);}});
         
+        colorButton = new JButton("Select color");
+        colorButton.addActionListener(new ActionListener() { 
+                    public void actionPerformed(ActionEvent e) 
+                         {
+                             ColorWindow sWindow = new ColorWindow(user);
+                         }});
+        
         buttonPanel = new JPanel();
         GridBagConstraints buttonC = new GridBagConstraints();
         buttonC.gridx = 0;
@@ -60,6 +70,7 @@ public class ChatWindow {
         
         buttonPanel.add(closeButton);
         buttonPanel.add(sendFileButton);
+        buttonPanel.add(colorButton);
         
         chatWindow = new JTextPane();
         chatWindow.setEditable(false);
@@ -120,15 +131,23 @@ public class ChatWindow {
        
         
     }
+    
+
+    
         class SendWindow{
             
             JFrame sMainFrame;
             JPanel sMainPanel;
             JButton sCloseButton;
             JButton sSendButton;
+            JButton browseButton;
             JTextField recipientField;
             JTextField messageField;
             JTextField portField;
+            
+            String filePath;
+            String fileName;
+            long fileSize;
             
             public SendWindow(boolean isHost){
                 
@@ -138,13 +157,42 @@ public class ChatWindow {
                     recipientField = new JTextField("Recipient...",15);
                     sMainPanel.add(recipientField);
                 }
-                portField = new JTextField("Port...",18);
-                sMainPanel.add(portField);
+                browseButton = new JButton("Browse for file...");
+                browseButton.addActionListener(new ActionListener(){
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        JFileChooser fileChooser = new JFileChooser();
+                        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+                        int result = fileChooser.showOpenDialog(mainFrame);
+                        if (result == JFileChooser.APPROVE_OPTION) {
+                            File selectedFile = fileChooser.getSelectedFile();
+                            fileName = selectedFile.getName();
+                            fileSize = selectedFile.length();
+                            filePath = selectedFile.getAbsolutePath();
+                            System.out.println("Selected file: " + selectedFile.getAbsolutePath()
+                            + " file size: " + fileSize + " name " + fileName);
+                    }}});
+                
+                sMainPanel.add(browseButton);
+                
+                //portField = new JTextField("Port...",18);
+               // sMainPanel.add(portField);
                 
                 messageField = new JTextField("Message...");
                 sMainPanel.add(messageField);
                 
-                sSendButton = new JButton("Send*");
+                sSendButton = new JButton("Send");
+                sSendButton.addActionListener(new ActionListener() { 
+                    public void actionPerformed(ActionEvent e) 
+                         
+                    {
+                        boolean meme =  user.checkIP(recipientField.getText());
+                        System.out.println(meme + " at ip " 
+                                + recipientField.getText());
+                        
+                         
+                         }});
+                
                 sMainPanel.add(sSendButton);
                 
                 sCloseButton = new JButton("Close");
@@ -162,6 +210,99 @@ public class ChatWindow {
                 
                 
             }
+        }
+        
+        class ReceiveWindow{
+            
+            JFrame rMainFrame;
+            JPanel rMainPanel;
+            JTextField infoField;
+            JTextField rPathField;
+            JTextField responseField;
+            JButton yesButton;
+            JButton noButton;
+            
+            
+            String filePath;
+            public ReceiveWindow(String name, long size){
+                
+                infoField = new JTextField("File name: " + name + " Size: " 
+                                            +size);
+                infoField.setEditable(false);
+                
+                rPathField = new JTextField("C:/"+name);
+                responseField = new JTextField("Type a response here...");
+                
+                yesButton = new JButton("Accept file");
+                noButton = new JButton("Deny file");
+                
+                rMainPanel = new JPanel();
+                rMainPanel.add(infoField);
+                rMainPanel.add(rPathField);
+                rMainPanel.add(responseField);
+                rMainPanel.add(yesButton);
+                rMainPanel.add(noButton);
+                
+                rMainFrame = new JFrame();
+                rMainFrame.add(rMainPanel);
+                rMainFrame.pack();
+                rMainFrame.setVisible(true);
+                
+                
+                
+                
+                
+            }
+        }
+        
+        class ColorWindow{
+            
+            Client cUser;
+            JFrame cMainFrame;
+            JPanel cMainPanel;
+            JTextField hexField;
+            JButton confirmButton;
+            
+            public ColorWindow(Client aUser){
+                
+                cUser = aUser;
+                
+                hexField = new JTextField("Enter hexcode");
+                
+                confirmButton = new JButton("Confirm");
+                confirmButton.addActionListener(new ActionListener() { 
+                    public void actionPerformed(ActionEvent e) 
+                         {
+                             Color newColor = 
+                                     createColorFromHex(hexField.getText());
+                             
+                             cUser.setColor(newColor);
+                             
+                         }});
+                
+                
+               cMainPanel = new JPanel();
+               cMainPanel.add(hexField);
+               cMainPanel.add(confirmButton);
+               
+               cMainFrame = new JFrame();
+               cMainFrame.add(cMainPanel);
+               cMainFrame.pack();
+               cMainFrame.setVisible(true);
+               
+                
+                     
+                    
+            }
+            
+            private Color createColorFromHex(String hexColor) {
+                int r, g, b;
+                r = Integer.valueOf(hexColor.substring(1, 3), 16);
+                g = Integer.valueOf(hexColor.substring(3, 5), 16);
+                b = Integer.valueOf(hexColor.substring(5, 7), 16);
+
+               return new Color(r,g,b);
+        }
         }
         
         

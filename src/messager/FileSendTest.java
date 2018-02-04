@@ -16,7 +16,7 @@ public class FileSendTest {
     public static void main (String [] args ) throws IOException, InterruptedException {
     
     FileSender send = new FileSender(13267,
-             "/Users/maxoliveberg/send_me.rtf");
+             "/Users/maxoliveberg/biggoy.jar");
 
      }
     

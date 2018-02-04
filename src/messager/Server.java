@@ -77,7 +77,16 @@ public abstract class Server implements MessageReceiver {
             e.printStackTrace();
         }
     }
-
+    public ArrayList<String> getIPs(){
+        
+        ArrayList<String> retList = new ArrayList();
+ 
+        for(int i =0;i<myClients.size();i++){
+            //System.out.println(myClients.get(i).getIP());
+            retList.add(myClients.get(i).getIP());
+        }
+        return retList;
+    }
     public Stream<ClientRep> getClients() {
         return myClients.stream();
     }

@@ -24,7 +24,20 @@ public class ClientRep {
         this.connection.registerMessager(messager);
         this.parser = saxFactory.newSAXParser();
     }
+    
+    public String toString(){
+        
+        return connection.getIP();
+    }
+    public Socket getSocket(){
+        
+        return connection.getSocket();
+    }
 
+    public String getIP(){
+        //System.out.println("ip fetched: "+connection.getIP());
+        return connection.getIP();
+    }
     public void sendString(Message message) {
         String outPutString = handleOutputMessage(message);
         connection.putStringOnStream(outPutString);
@@ -75,6 +88,7 @@ public class ClientRep {
         private String text;
         private boolean haveSetName = false;
         private boolean haveSetColor;
+        private boolean isFileReq = false;
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
@@ -93,6 +107,10 @@ public class ClientRep {
                 }
             } else if (qName.equalsIgnoreCase("text") && haveSetColor) {
                 throw new IllegalArgumentException();
+            }
+            if (qName.equals("filerequest")){
+                this.isFileReq = true;
+                
             }
         }
 

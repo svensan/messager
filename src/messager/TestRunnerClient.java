@@ -12,9 +12,8 @@ public class TestRunnerClient {
 //        ServerMultipart server = createServer();
 //        server.startServer();
 
-        sven.getConnection("localhost", 1742);
-        max.getConnection("localhost", 1742);
-        ove.getConnection("localhost", 1742);
+        sven.getConnection("localhost",10000 );
+
 
         //server.sendMessageToGroupChat("Hello World!");
 
@@ -22,11 +21,7 @@ public class TestRunnerClient {
 
 
         sven.sendMessage(myMessage);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
 
         /*
         sven.sendMessage("Blää!");

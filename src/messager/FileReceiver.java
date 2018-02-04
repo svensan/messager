@@ -64,11 +64,11 @@ public class FileReceiver {
                 is.read(mybytearray, current, (mybytearray.length-current));
                 if(bytesRead >= 0) current += bytesRead;
                 } while(bytesRead > -1);
-
-            bos.write(mybytearray, 0 , current);
-            bos.flush();
             System.out.println("File " + rFilePath
                 + " downloaded (" + current + " bytes read)");
+            bos.write(mybytearray, 0 , current);
+            bos.flush();
+
     }
         finally {
             if (fos != null) fos.close();

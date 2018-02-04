@@ -21,6 +21,14 @@ public class Comm implements Runnable {
         myThread.start();
     }
 
+    public Socket getSocket(){
+        return myConnection;
+    }
+    
+    public String getIP(){
+        String retIP = myConnection.getInetAddress().toString().substring(1);
+        return retIP;
+    }
     private void setUpStreams() {
         try {
             output = new PrintWriter(this.myConnection.getOutputStream());

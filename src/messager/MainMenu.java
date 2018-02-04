@@ -170,6 +170,7 @@ public class MainMenu{
                 
                 Client client = new Client(true);
                 client.setName(name);
+                client.setServer(server);
                 client.getConnection("localhost", port);
                 
             }});
