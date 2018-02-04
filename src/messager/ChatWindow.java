@@ -25,7 +25,7 @@ public class ChatWindow {
     JScrollPane chatScrollWindow;
     
     JButton closeButton;
-    JButton exampleButton;
+    JButton sendFileButton;
     
     JTextField textField;
     
@@ -38,7 +38,11 @@ public class ChatWindow {
         closeButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) {mainFrame.dispose();}});
         
-        exampleButton = new JButton("exempelknapp*");
+        sendFileButton = new JButton("Send File");
+        sendFileButton.addActionListener(new ActionListener() { 
+                    public void actionPerformed(ActionEvent e) 
+                         {
+                             SendWindow sWindow = new SendWindow(true);}});
         
         buttonPanel = new JPanel();
         GridBagConstraints buttonC = new GridBagConstraints();
@@ -46,7 +50,7 @@ public class ChatWindow {
         buttonC.gridy = 0;
         
         buttonPanel.add(closeButton);
-        buttonPanel.add(exampleButton);
+        buttonPanel.add(sendFileButton);
         
         chatWindow = new JEditorPane();
         chatWindow.setEditable(false);
@@ -74,12 +78,51 @@ public class ChatWindow {
         mainFrame.pack();
         mainFrame.setVisible(true);
 
-        
-        
+    } 
+    
+        class SendWindow{
+            
+            JFrame sMainFrame;
+            JPanel sMainPanel;
+            JButton sCloseButton;
+            JButton sSendButton;
+            JTextField recipientField;
+            JTextField portField;
+            
+            public SendWindow(boolean isHost){
+                
+                sMainPanel = new JPanel();
+                sMainPanel.setLayout(new GridLayout(4,1));
+                if(isHost == true){
+                    recipientField = new JTextField("Recipient...",15);
+                    sMainPanel.add(recipientField);
+                }
+                portField = new JTextField("Port...",18);
+                sMainPanel.add(portField);
+                
+                sSendButton = new JButton("Send*");
+                sMainPanel.add(sSendButton);
+                
+                sCloseButton = new JButton("Close");
+                sCloseButton.addActionListener(new ActionListener() { 
+                    public void actionPerformed(ActionEvent e) 
+                         {sMainFrame.dispose();}});
+                sMainPanel.add(sCloseButton);
+                
+                sMainFrame = new JFrame();
+                sMainFrame.add(sMainPanel);
+                sMainFrame.setSize(300,150);
+                sMainFrame.pack();
+                sMainFrame.setVisible(true);
+                
+                
+                
+            }
+        }
         
         
         
         
         
     }
-}
+

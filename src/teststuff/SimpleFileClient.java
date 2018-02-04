@@ -20,7 +20,7 @@ public class SimpleFileClient {
   public final static int SOCKET_PORT = 13267;      // you may change this
   public final static String SERVER = "10.0.1.7";  // localhost
   public final static String
-       FILE_TO_RECEIVED = "/Users/maxoliveberg/received.rtf";  // you may change this, I give a
+       FILE_TO_RECEIVED = "/Users/svensan/projects/OPK/received.rtf";  // you may change this, I give a
                                                             // different name because i don't want to
                                                             // overwrite the one used by server...
 

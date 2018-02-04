@@ -50,7 +50,7 @@ public class MainMenu{
         hostButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                HostMenu newhMenu = new HostMenu();
+                HostMenu newMenu = new HostMenu();
             }
             
         
