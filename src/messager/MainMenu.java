@@ -111,6 +111,7 @@ public class MainMenu{
                 Client client = new Client(false);
                 client.setName(name);
                 client.getConnection(adress, port);
+                cMainFrame.dispose();
                 
             }});
             
@@ -172,6 +173,7 @@ public class MainMenu{
                 client.setName(name);
                 client.setServer(server);
                 client.getConnection("localhost", port);
+                hMainFrame.dispose();
                 
             }});
             

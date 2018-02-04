@@ -10,6 +10,9 @@ import static java.awt.Color.blue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.stage.FileChooser;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -48,7 +51,9 @@ public class ChatWindow {
         
         closeButton = new JButton("Close");
         closeButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) {mainFrame.dispose();}});
+            public void actionPerformed(ActionEvent e) {mainFrame.dispose();
+            user.close();
+            }});
         
         sendFileButton = new JButton("Send File");
         sendFileButton.addActionListener(new ActionListener() { 
@@ -144,6 +149,7 @@ public class ChatWindow {
             JTextField recipientField;
             JTextField messageField;
             JTextField portField;
+            JTextField pathField;
             
             String filePath;
             String fileName;
@@ -157,6 +163,10 @@ public class ChatWindow {
                     recipientField = new JTextField("Recipient...",15);
                     sMainPanel.add(recipientField);
                 }
+                
+                pathField = new JTextField("");
+                pathField.setEditable(false);
+                
                 browseButton = new JButton("Browse for file...");
                 browseButton.addActionListener(new ActionListener(){
                     @Override
@@ -166,13 +176,16 @@ public class ChatWindow {
                         int result = fileChooser.showOpenDialog(mainFrame);
                         if (result == JFileChooser.APPROVE_OPTION) {
                             File selectedFile = fileChooser.getSelectedFile();
+                            
                             fileName = selectedFile.getName();
                             fileSize = selectedFile.length();
                             filePath = selectedFile.getAbsolutePath();
+                            pathField.setText(filePath);
                             System.out.println("Selected file: " + selectedFile.getAbsolutePath()
                             + " file size: " + fileSize + " name " + fileName);
                     }}});
                 
+                sMainPanel.add(pathField);
                 sMainPanel.add(browseButton);
                 
                 //portField = new JTextField("Port...",18);
@@ -198,7 +211,12 @@ public class ChatWindow {
                 sCloseButton = new JButton("Close");
                 sCloseButton.addActionListener(new ActionListener() { 
                     public void actionPerformed(ActionEvent e) 
-                         {sMainFrame.dispose();}});
+                        {
+                        
+                        
+                        sMainFrame.dispose();
+                             
+                        }});
                 sMainPanel.add(sCloseButton);
                 
                 sMainFrame = new JFrame();
@@ -277,6 +295,7 @@ public class ChatWindow {
                                      createColorFromHex(hexField.getText());
                              
                              cUser.setColor(newColor);
+                             cMainFrame.dispose();
                              
                          }});
                 

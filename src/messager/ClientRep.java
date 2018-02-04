@@ -44,6 +44,8 @@ public class ClientRep {
     }
 
     public void closeConnection() {
+        
+        System.out.println("got so far to lose it all");
         connection.close();
     }
 

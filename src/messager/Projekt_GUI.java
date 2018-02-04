@@ -20,12 +20,6 @@ public class Projekt_GUI {
      */
     public static void main(String[] args) {
         MainMenu theMenu = new MainMenu();
-        Client meme = null;
-        ChatWindow theChat = new ChatWindow(meme);
-        
-        Message sheit = new Message(red,"Yung Riley","Ye boii");
-        
-        theChat.handleMessage(sheit);
     }
     
 }

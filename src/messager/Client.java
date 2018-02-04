@@ -26,6 +26,11 @@ public class Client implements MessageReceiver {
         return textColor;
         
     }
+    
+    public void close(){
+        System.out.println("WAKE ME UP");
+        myRepresentation.closeConnection();
+    }
     public void setColor(Color aC){
         
         textColor = aC;
