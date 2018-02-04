@@ -5,6 +5,7 @@
  */
 package messager;
 
+import static java.awt.Color.red;
 import messager.MainMenu;
 import messager.ChatWindow;
 
@@ -21,6 +22,10 @@ public class Projekt_GUI {
         MainMenu theMenu = new MainMenu();
         
         ChatWindow theChat = new ChatWindow();
+        
+        Message sheit = new Message(red,"Yung Riley","Ye boii");
+        
+        theChat.handleMessage(sheit);
     }
     
 }

@@ -1,6 +1,11 @@
 package teststuff;
 
+import messager.Message;
 import java.awt.*;
+import messager.Message;
+import messager.Message;
+import messager.Message;
+import teststuff.TestClient;
 
 public class TestRunnerClient {
 

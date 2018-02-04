@@ -1,5 +1,6 @@
 package teststuff;
 
+import messager.Message;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

@@ -1,5 +1,6 @@
 package teststuff;
 
+import messager.Message;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 

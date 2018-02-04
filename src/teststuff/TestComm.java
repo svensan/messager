@@ -1,5 +1,6 @@
 package teststuff;
 
+import messager.Message;
 import serverclasses.MessageReceiver;
 
 import java.io.BufferedReader;

@@ -1,5 +1,11 @@
 package teststuff;
 
+import messager.Message;
+import messager.Message;
+import messager.Message;
+import messager.Message;
+import teststuff.TestClientRep;
+
 public class TestServerMultipart extends TestServer {
 
     public void receive(Message message, TestClientRep sender) {

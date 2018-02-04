@@ -1,4 +1,4 @@
-package teststuff;
+package messager;
 
 import java.awt.*;
 

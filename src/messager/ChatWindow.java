@@ -6,9 +6,14 @@
 package messager;
 
 import java.awt.*;
+import static java.awt.Color.blue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 
 /**
@@ -21,7 +26,7 @@ public class ChatWindow {
     
     JPanel buttonPanel; 
     
-    JEditorPane chatWindow;
+    JTextPane chatWindow;
     JScrollPane chatScrollWindow;
     
     JButton closeButton;
@@ -52,7 +57,7 @@ public class ChatWindow {
         buttonPanel.add(closeButton);
         buttonPanel.add(sendFileButton);
         
-        chatWindow = new JEditorPane();
+        chatWindow = new JTextPane();
         chatWindow.setEditable(false);
         
         chatScrollWindow = new JScrollPane(chatWindow);
@@ -80,6 +85,23 @@ public class ChatWindow {
 
     } 
     
+    public void handleMessage(Message argM){
+        
+        String user = argM.getSenderName();
+        String message = argM.getText();
+        Color color = argM.getColor();
+        StyledDocument doc = chatWindow.getStyledDocument();
+
+        Style style = chatWindow.addStyle("I'm a Style", null);
+        StyleConstants.setForeground(style, color);
+
+        try { doc.insertString(doc.getLength(), user+": "+message +"\n",style); }
+        catch (BadLocationException e){}
+
+        
+       
+        
+    }
         class SendWindow{
             
             JFrame sMainFrame;
@@ -87,18 +109,22 @@ public class ChatWindow {
             JButton sCloseButton;
             JButton sSendButton;
             JTextField recipientField;
+            JTextField messageField;
             JTextField portField;
             
             public SendWindow(boolean isHost){
                 
                 sMainPanel = new JPanel();
-                sMainPanel.setLayout(new GridLayout(4,1));
+                sMainPanel.setLayout(new GridLayout(5,1));
                 if(isHost == true){
                     recipientField = new JTextField("Recipient...",15);
                     sMainPanel.add(recipientField);
                 }
                 portField = new JTextField("Port...",18);
                 sMainPanel.add(portField);
+                
+                messageField = new JTextField("Message...");
+                sMainPanel.add(messageField);
                 
                 sSendButton = new JButton("Send*");
                 sMainPanel.add(sSendButton);
