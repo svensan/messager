@@ -13,8 +13,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import static teststuff.SimpleFileServer.FILE_TO_SEND;
-import static teststuff.SimpleFileServer.SOCKET_PORT;
+
 /**
  *
  * @author maxoliveberg

@@ -1,24 +1,19 @@
-package teststuff;
+package messager;
 
-
-
-import messager.Message;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.stream.Stream;
-import messager.Message;
-import messager.Message;
 
-public abstract class TestServer implements TestMessageReceiver {
+public abstract class Server implements MessageReceiver {
 
     private ServerSocket server;
-    private ArrayList<TestClientRep> myClients = new ArrayList<>();
+    private ArrayList<ClientRep> myClients = new ArrayList<>();
     private int amountOfClients = 0;
     private int port;
     private boolean haveSetPort;
 
-    public TestServer() {
+    public Server() {
         haveSetPort = false;
     }
 
@@ -50,7 +45,7 @@ public abstract class TestServer implements TestMessageReceiver {
     private void getNewClient() {
         try {
             Socket newClientCon = server.accept();
-            TestClientRep newClient = new TestClientRep(newClientCon, this);
+            ClientRep newClient = new ClientRep(newClientCon, this);
             myClients.add(newClient);
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,12 +58,12 @@ public abstract class TestServer implements TestMessageReceiver {
         this.haveSetPort = true;
     }
 
-    public void sendMessage(Message message, TestClientRep receiver) {
+    public void sendMessage(Message message, ClientRep receiver) {
         receiver.sendString(message);
     }
 
     public void closeEverything() {
-        for (TestClientRep client : myClients) {
+        for (ClientRep client : myClients) {
             try {
                 client.closeConnection();
             } catch (Exception e) {
@@ -83,9 +78,9 @@ public abstract class TestServer implements TestMessageReceiver {
         }
     }
 
-    public Stream<TestClientRep> getClients() {
+    public Stream<ClientRep> getClients() {
         return myClients.stream();
     }
 
-    public abstract void receive(Message message, TestClientRep sender);
+    public abstract void receive(Message message, ClientRep sender);
 }

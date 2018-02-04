@@ -1,16 +1,15 @@
-package teststuff;
+package messager;
 
-import messager.Message;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-public class TestClient implements TestMessageReceiver {
+public class Client implements MessageReceiver {
 
     private boolean haveSetName;
     private String name;
-    private TestClientRep myRepresentation;
+    private ClientRep myRepresentation;
 
-    public TestClient() {
+    public Client() {
         haveSetName = false;
     }
 
@@ -20,7 +19,7 @@ public class TestClient implements TestMessageReceiver {
                 Socket mySocket = new Socket();
                 mySocket.connect(new InetSocketAddress(host, port));
                 if (mySocket.isConnected()) {
-                    myRepresentation = new TestClientRep(mySocket, this);
+                    myRepresentation = new ClientRep(mySocket, this);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -36,11 +35,11 @@ public class TestClient implements TestMessageReceiver {
     }
 
     public void sendMessage(Message message) {
-        System.out.println("TestClient: putStringOnStream");
+        System.out.println("Client: putStringOnStream");
         myRepresentation.sendString(message);
     }
 
-    public void receive(Message message, TestClientRep sender) {
+    public void receive(Message message, ClientRep sender) {
         System.out.println("receive - my name is "+name+" and I just read: "+message.getText()+"\n and it's from: " +
                 message.getSenderName());
         System.out.flush();

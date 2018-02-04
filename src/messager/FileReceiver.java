@@ -11,10 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
-import static teststuff.SimpleFileClient.FILE_SIZE;
-import static teststuff.SimpleFileClient.FILE_TO_RECEIVED;
-import static teststuff.SimpleFileClient.SERVER;
-import static teststuff.SimpleFileClient.SOCKET_PORT;
+
 
 /**
  *

@@ -1,21 +1,18 @@
-package teststuff;
-
-import messager.Message;
-import serverclasses.MessageReceiver;
+package messager;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class TestComm implements Runnable {
-    private TestMessageReceiver receiver;
+public class Comm implements Runnable {
+    private MessageReceiver receiver;
     private Socket myConnection;
     private PrintWriter output;
     private BufferedReader input;
-    private TestClientRep myOwner;
+    private ClientRep myOwner;
 
-    public TestComm(Socket connection, TestClientRep myOwner) {
+    public Comm(Socket connection, ClientRep myOwner) {
         myConnection = connection;
         this.myOwner = myOwner;
 
@@ -73,7 +70,7 @@ public class TestComm implements Runnable {
         System.out.flush();
     }
 
-    public void registerMessager(TestMessageReceiver messager) {
+    public void registerMessager(MessageReceiver messager) {
         this.receiver = messager;
     }
 

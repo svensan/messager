@@ -1,20 +1,15 @@
-package teststuff;
+package messager;
 
-import messager.Message;
 import java.awt.*;
-import messager.Message;
-import messager.Message;
-import messager.Message;
-import teststuff.TestClient;
 
 public class TestRunnerClient {
 
     public static void main(String[] args) {
-        TestClient sven = createClient("Sven");
-        TestClient max = createClient("Max");
-        TestClient ove = createClient("Ove");
+        Client sven = createClient("Sven");
+        Client max = createClient("Max");
+        Client ove = createClient("Ove");
 
-//        TestServerMultipart server = createServer();
+//        ServerMultipart server = createServer();
 //        server.startServer();
 
         sven.getConnection("localhost", 1742);
@@ -56,14 +51,14 @@ public class TestRunnerClient {
 //        server.closeEverything();
     }
 
-    private static TestServerMultipart createServer() {
-        TestServerMultipart server = new TestServerMultipart();
+    private static ServerMultipart createServer() {
+        ServerMultipart server = new ServerMultipart();
         server.setPort(1742);
         return server;
     }
 
-    private static TestClient createClient(String name) {
-        TestClient client = new TestClient();
+    private static Client createClient(String name) {
+        Client client = new Client();
         client.setName(name);
         return client;
     }

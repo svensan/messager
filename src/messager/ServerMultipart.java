@@ -1,14 +1,8 @@
-package teststuff;
+package messager;
 
-import messager.Message;
-import messager.Message;
-import messager.Message;
-import messager.Message;
-import teststuff.TestClientRep;
+public class ServerMultipart extends Server {
 
-public class TestServerMultipart extends TestServer {
-
-    public void receive(Message message, TestClientRep sender) {
+    public void receive(Message message, ClientRep sender) {
         this.getClients().forEach(p -> {
             if (p != sender) {
                 this.sendMessage(message, p);
