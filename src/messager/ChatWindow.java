@@ -34,7 +34,11 @@ public class ChatWindow {
     
     JTextField textField;
     
-    ChatWindow(){
+    Client user;
+    
+    ChatWindow(Client creator){
+        
+        user = creator;
         
         mainFrame = new JFrame();
         mainPanel = new JPanel(new GridBagLayout());
@@ -70,6 +74,20 @@ public class ChatWindow {
         scrollC.gridy = 1;
         
         textField = new JTextField("type message...*",35);
+        textField.addActionListener(new ActionListener() { 
+                    public void actionPerformed(ActionEvent e) 
+                         {
+                         String messageText = textField.getText();
+                         Color color = user.getColor();
+                         String name = user.getName();
+                         
+                         Message message = new Message(
+                         color, name, messageText);
+                         
+                         user.sendMessage(message);
+                         
+                         textField.setText("");
+                         }});
         
         GridBagConstraints textC = new GridBagConstraints();
         textC.gridx = 0;

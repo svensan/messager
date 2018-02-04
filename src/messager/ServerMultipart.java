@@ -4,9 +4,9 @@ public class ServerMultipart extends Server {
 
     public void receive(Message message, ClientRep sender) {
         this.getClients().forEach(p -> {
-            if (p != sender) {
-                this.sendMessage(message, p);
-            }
+            
+            this.sendMessage(message, p);
+            
         });
     }
 

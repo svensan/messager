@@ -20,8 +20,8 @@ public class Projekt_GUI {
      */
     public static void main(String[] args) {
         MainMenu theMenu = new MainMenu();
-        
-        ChatWindow theChat = new ChatWindow();
+        Client meme = null;
+        ChatWindow theChat = new ChatWindow(meme);
         
         Message sheit = new Message(red,"Yung Riley","Ye boii");
         

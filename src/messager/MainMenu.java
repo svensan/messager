@@ -83,6 +83,8 @@ public class MainMenu{
         JFrame cMainFrame; // mainpanel sitter på mainframe
         JPanel cMainPanel; // ALLT sitter på mainpanel
         JTextField adressBar;
+        JTextField cNameBar;
+        JTextField portBar;
         JButton cConnectButton;
         JButton cCloseButton;
         
@@ -94,9 +96,23 @@ public class MainMenu{
             cMainPanel.setLayout(new GridLayout(3,1));
             
             
-            adressBar = new JTextField("Please enter IP:PORT*");
+            adressBar = new JTextField("Please enter IP");
+            portBar = new JTextField("Please enter port");
+            cNameBar = new JTextField("Please enter a name");
             
             cConnectButton = new JButton("Connect*");
+            cConnectButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int port = Integer.parseInt(portBar.getText());
+                String name = cNameBar.getText();
+                String adress = adressBar.getText();
+
+                Client client = new Client(false);
+                client.setName(name);
+                client.getConnection(adress, port);
+                
+            }});
             
             cCloseButton = new JButton("Close");
             cCloseButton.addActionListener(new ActionListener() { 
@@ -107,7 +123,9 @@ public class MainMenu{
             }
             );
             
+            cMainPanel.add(cNameBar);
             cMainPanel.add(adressBar);
+            cMainPanel.add(portBar);
             cMainPanel.add(cConnectButton);
             cMainPanel.add(cCloseButton);
             
@@ -125,6 +143,7 @@ public class MainMenu{
         JFrame hMainFrame; // mainpanel sitter på mainframe
         JPanel hMainPanel; // ALLT sitter på mainpanel
         JTextField adressBar;
+        JTextField nameBar;
         JButton hConnectButton;
         JButton hCloseButton;
         
@@ -136,9 +155,24 @@ public class MainMenu{
             hMainPanel.setLayout(new GridLayout(3,1));
             
             
-            adressBar = new JTextField("Please enter PORT*");
+            adressBar = new JTextField("Please enter PORT");
+            nameBar = new JTextField("Please enter your name");
             
-            hConnectButton = new JButton("Connect*");
+            hConnectButton = new JButton("Host");
+            hConnectButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int port = Integer.parseInt(adressBar.getText());
+                String name = nameBar.getText();
+                ServerMultipart server = new ServerMultipart();
+                server.setPort(port);
+                server.startServer();
+                
+                Client client = new Client(true);
+                client.setName(name);
+                client.getConnection("localhost", port);
+                
+            }});
             
             hCloseButton = new JButton("Close");
             hCloseButton.addActionListener(new ActionListener() { 
@@ -149,6 +183,7 @@ public class MainMenu{
             }
             );
             
+            hMainPanel.add(nameBar);
             hMainPanel.add(adressBar);
             hMainPanel.add(hConnectButton);
             hMainPanel.add(hCloseButton);

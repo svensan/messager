@@ -58,7 +58,7 @@ public class TestRunnerClient {
     }
 
     private static Client createClient(String name) {
-        Client client = new Client();
+        Client client = new Client(false);
         client.setName(name);
         return client;
     }
