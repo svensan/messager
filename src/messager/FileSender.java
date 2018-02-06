@@ -63,7 +63,7 @@ public class FileSender {
                     os = sock.getOutputStream();
                     fis = new FileInputStream(sentFile);
                     bis = new BufferedInputStream(fis);
-                    bis.read(mybytearray,0,mybytearray.length);
+                    //bis.read(mybytearray,0,mybytearray.length);
                     JFrame pF = new JFrame();
                     JProgressBar bar = new JProgressBar();
                     bar.setMaximum(fileSize);
@@ -84,7 +84,7 @@ public class FileSender {
         }
 
 
-                   // os.write(mybytearray,0,mybytearray.length);
+                    os.write(mybytearray,0,mybytearray.length);
                     
                     os.flush();
                     System.out.println("Done.");

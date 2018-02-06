@@ -18,7 +18,7 @@ public class ReceiveTest {
 
      File sentFile = new File("/Users/maxoliveberg/Downloads/F6.pdf");
      FileReceiver r  = new FileReceiver(13267,"10.0.1.7",
-             "/Users/maxoliveberg/fileTest.pdf",(int)sentFile.length());
+             "/Users/maxoliveberg/f6.pdf",(int)sentFile.length());
      
      
      }
