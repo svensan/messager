@@ -11,7 +11,7 @@ public class Client implements MessageReceiver {
     private boolean haveSetName;
     private String name;
     private ClientRep myRepresentation;
-    boolean isAdmin;
+    private boolean isAdmin;
     private ChatWindow window;
     Color textColor;
     private ServerMultipart server;

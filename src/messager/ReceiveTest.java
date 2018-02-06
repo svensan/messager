@@ -5,6 +5,7 @@
  */
 package messager;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -15,9 +16,9 @@ public class ReceiveTest {
     
     public static void main (String [] args ) throws IOException, InterruptedException {
 
-     
+     File sentFile = new File("/Users/maxoliveberg/Downloads/F6.pdf");
      FileReceiver r  = new FileReceiver(13267,"10.0.1.7",
-             "/Users/maxoliveberg/biggoydos.jar");
+             "/Users/maxoliveberg/fileTest.pdf",(int)sentFile.length());
      
      
      }
