@@ -5,6 +5,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.awt.*;
@@ -15,6 +16,9 @@ import java.nio.charset.StandardCharsets;
 
 public class ClientRep {
 
+    private Encryptor encryption;
+    private MessageConverter messageConverter;
+    private String encryptionType = "none";
     private Comm connection;
     private SAXParserFactory saxFactory = SAXParserFactory.newInstance();
     private SAXParser parser;
@@ -23,12 +27,14 @@ public class ClientRep {
         this.connection = new Comm(connection, this);
         this.connection.registerMessager(messager);
         this.parser = saxFactory.newSAXParser();
+        this.messageConverter = new DefaultMessageConverter();
     }
     
     public String toString(){
         
         return connection.getIP();
     }
+
     public Socket getSocket(){
         
         return connection.getSocket();
@@ -49,13 +55,12 @@ public class ClientRep {
         connection.close();
     }
 
-    public String handleOutputMessage(Message message) {
-        String name = message.getSenderName();
-        String hexColor = getHexColor(message.getColor());
-        String text = message.getText();
+    public void registerMessageConverter(MessageConverter messageConverter) {
+        this.messageConverter = messageConverter;
+    }
 
-        String holdString = addTagWithAttribute("text","color",hexColor,text);
-        return addTagWithAttribute("message","name",name,holdString);
+    private String handleOutputMessage(Message message) {
+        return messageConverter.convertMessage(message);
     }
 
     public Message handleInputMessage(String messageString) throws Exception {
@@ -63,7 +68,7 @@ public class ClientRep {
         InputStream stream = new ByteArrayInputStream(messageString.getBytes(StandardCharsets.UTF_8.name()));
 
         try {
-            parser.parse(stream, myHandler);
+            this.useParser(stream, myHandler);
         } catch (Exception e) {
             System.out.println("OOOOps");
         }
@@ -71,49 +76,44 @@ public class ClientRep {
         return myHandler.getMessage();
     }
 
-    private String addTagWithAttribute(String tagName, String attributeName, String attributeValue, String text) {
-        return String.format("<%1$2s %2$2s=\"%3$2s\">%4$2s</%1$2s>",tagName,attributeName,attributeValue,text);
+    private void useParser(InputStream stream, DefaultHandler handler) {
+        try {
+            parser.parse(stream, handler);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private String getHexColor(Color myColor) {
-        int r = myColor.getRed();
-        int g = myColor.getGreen();
-        int b = myColor.getBlue();
-        String hexColor = String.format("#%02X%02X%02X", r, g, b);
-        return hexColor;
+    private SAXParser getParser() {
+        try {
+            return saxFactory.newSAXParser();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
-    private static class MyParceHandler extends DefaultHandler {
+    private class MyParceHandler extends DefaultHandler {
 
         private String messageSender;
-        private String textColor;
+        private Color color = Color.BLACK;
         private String text;
         private boolean haveSetName = false;
-        private boolean haveSetColor;
-        private boolean isFileReq = false;
+        private boolean haveSetColor = false;
+        private boolean isEncrypted = false;
+        private String key;
+        private String type;
+        private boolean messageContainsFileRequest = false;
+        private FileRequest fileRequest;
+        private boolean messageContainsFileResponse = false;
+        private FileResponse fileResponse;
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
-            if (qName.equalsIgnoreCase("message") && !haveSetName) {
-                if (attributes.getLocalName(0).equalsIgnoreCase("name")) {
-                    messageSender = attributes.getValue(0);
-                    haveSetName = true;
-                }
-            } else if (qName.equalsIgnoreCase("message") && haveSetName) {
-                throw new IllegalArgumentException();
-            }
-            if (qName.equalsIgnoreCase("text") && !haveSetColor) {
-                if (attributes.getLocalName(0).equalsIgnoreCase("color")) {
-                    textColor = attributes.getValue(0);
-                    haveSetColor = true;
-                }
-            } else if (qName.equalsIgnoreCase("text") && haveSetColor) {
-                throw new IllegalArgumentException();
-            }
-            if (qName.equals("filerequest")){
-                this.isFileReq = true;
-                
-            }
+
+            this.handleStartTag(qName, attributes);
+
         }
 
         @Override
@@ -122,12 +122,92 @@ public class ClientRep {
 
         @Override
         public void characters(char ch[], int start, int length) throws SAXException {
-            text = new String(ch, start, length);
+            if (isEncrypted) {
+                try {
+                    isEncrypted = false;
+                    String encryptedMessageHex = new String(ch, start, length);
+                    String encryptedMessage = this.toText(encryptedMessageHex);
+
+                    String text = ClientRep.this.encryption.decrypt(type, key,
+                            "RandomInitVector", encryptedMessage);
+                    InputStream stream = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8.name()));
+
+                    SAXParser newParser = ClientRep.this.getParser();
+
+                    newParser.parse(stream, this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                text = new String(ch, start, length);
+            }
         }
 
         public Message getMessage() {
-            Color myColor = createColorFromHex(this.textColor);
-            return new Message(myColor, messageSender, text);
+            if (messageContainsFileRequest) {
+                return new Message(messageSender, text, fileRequest);
+            } else if (messageContainsFileResponse) {
+                return new Message(messageSender, text, fileResponse);
+            } else return new Message(color, messageSender, text);
+        }
+
+        private void handleStartTag(String tagName, Attributes attributes) {
+
+            if (tagName.equalsIgnoreCase("message")) {
+                this.handleMessageTag(attributes);
+            }
+
+            if (tagName.equalsIgnoreCase("text")) {
+                this.handleTextTag(attributes);
+            }
+
+            if (tagName.equalsIgnoreCase("encrypted")) {
+                this.handleEncryptedTag(attributes);
+            }
+
+            if (tagName.equalsIgnoreCase("filerequest")) {
+                this.handleFileRequestTag(attributes);
+            }
+
+            if (tagName.equalsIgnoreCase("fileresponse")) {
+                this.handleFileResponseTag(attributes);
+            }
+        }
+
+        private void handleTextTag(Attributes attributes) {
+            color = createColorFromHex(attributes.getValue("color"));
+            haveSetColor = true;
+        }
+
+        private void handleEncryptedTag(Attributes attributes) {
+            isEncrypted = true;
+            type = attributes.getValue("type");
+            key = this.toText(attributes.getValue("key"));
+        }
+
+        private void handleMessageTag(Attributes attributes) {
+            messageSender = attributes.getValue("sender");
+            haveSetName = true;
+        }
+
+        private void handleFileRequestTag(Attributes attributes) {
+            String fileName = attributes.getValue("name");
+            int fileSize = Integer.valueOf(attributes.getValue("size"));
+
+            fileRequest = new FileRequest(fileName, fileSize);
+            messageContainsFileRequest = true;
+        }
+
+        private void handleFileResponseTag(Attributes attributes) {
+            boolean acceptedFileRequest = attributes.getValue("reply").equalsIgnoreCase("yes");
+
+            int port = Integer.valueOf(attributes.getValue("port"));
+
+            fileResponse = new FileResponse(acceptedFileRequest, port);
+            messageContainsFileResponse = true;
+        }
+
+        private void handeRequestTag(Attributes attributes) {
         }
 
         private Color createColorFromHex(String hexColor) {
@@ -136,7 +216,17 @@ public class ClientRep {
             g = Integer.valueOf(hexColor.substring(3, 5), 16);
             b = Integer.valueOf(hexColor.substring(5, 7), 16);
 
-            return new Color(r,g,b);
+            return new Color(r, g, b);
+        }
+
+        public String toText(String hex) {
+            try {
+                byte[] bytes = DatatypeConverter.parseHexBinary(hex);
+                return new String(bytes, StandardCharsets.UTF_8);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 }
