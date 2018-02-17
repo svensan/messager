@@ -11,6 +11,9 @@ public class Message {
     private FileRequest fileRequest;
     private boolean isFileResponse = false;
     private FileResponse fileResponse;
+    
+    
+    private boolean disconnect;
 
     public Message(Color color, String senderName, String text) {
         this.color = color;
@@ -45,6 +48,16 @@ public class Message {
                        FileResponse fileResponse) {
         this(Color.BLACK, senderName, text, fileResponse);
     }
+    
+    public Message(Color color,String senderName, String text, boolean Disconnect){
+        this.color = color;
+        this.senderName = senderName;
+        this.text = text;
+        this.disconnect=Disconnect;
+
+        this.isFileRequest = false;
+        
+    }
 
     public Color getColor() {
         return color;
@@ -72,5 +85,9 @@ public class Message {
 
     public FileResponse getFileResponse() {
         return fileResponse;
+    }
+    
+    public boolean isDisconnectMessage(){
+        return disconnect;
     }
 }

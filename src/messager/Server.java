@@ -12,6 +12,7 @@ public abstract class Server implements MessageReceiver {
     private int amountOfClients = 0;
     private int port;
     private boolean haveSetPort;
+    private Client owner;
 
     public Server() {
         haveSetPort = false;
@@ -62,6 +63,14 @@ public abstract class Server implements MessageReceiver {
         receiver.sendString(message);
     }
 
+    public void setOwner(Client own){ 
+        owner = own;
+    }
+    
+    public Client getOwner(){
+        return owner;
+    }
+    
     public void closeEverything() {
         for (ClientRep client : myClients) {
             try {

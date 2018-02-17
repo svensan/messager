@@ -2,9 +2,12 @@ package messager;
 
 import java.awt.Color;
 import static java.awt.Color.*;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Client implements MessageReceiver {
 
@@ -15,13 +18,32 @@ public class Client implements MessageReceiver {
     private ChatWindow window;
     Color textColor;
     private ServerMultipart server;
+    private String connectedIP;
+    
+    private int sentFilePort;
+    private int sentFileSize;
+    private String sentFileName;
+    private String sentFilePath;
+    
 
     public Client(boolean admin) {
         haveSetName = false;
         isAdmin = admin;
         textColor = black;
     }
+    
+    public void setSendInfo(int port, int size, String fName, String fPath){
+        
+        sentFilePort = port;
+        sentFileSize = size;
+        sentFileName = fName;
+        sentFilePath = fPath;
+    }
 
+    public boolean isAdmin(){
+        return isAdmin;
+    }
+    
     public Color getColor(){
         return textColor;
         
@@ -29,6 +51,13 @@ public class Client implements MessageReceiver {
     
     public void close(){
         System.out.println("WAKE ME UP");
+        Message discM = new Message(textColor,name, "Im out lol",true);
+        sendMessage(discM);
+        try{
+        Thread.sleep(5);}
+        catch(InterruptedException e){
+        }
+        
         myRepresentation.closeConnection();
     }
     public void setColor(Color aC){
@@ -38,6 +67,9 @@ public class Client implements MessageReceiver {
     
     public void setServer(ServerMultipart aServer){
         server = aServer;
+    }
+    public ServerMultipart getServer(){
+        return server;
     }
     
     public boolean checkIP(String ip){
@@ -63,8 +95,12 @@ public class Client implements MessageReceiver {
             try {
                 Socket mySocket = new Socket();
                 mySocket.connect(new InetSocketAddress(host, port));
+                connectedIP = host;
                 if (mySocket.isConnected()) {
                     myRepresentation = new ClientRep(mySocket, this);
+                    
+                    if(isAdmin){myRepresentation.setHost(true);}
+                    
                     Message connectMessage = new Message(red,this.getName(),
                             "Successfully connected to server!");
                     sendMessage(connectMessage);
@@ -77,6 +113,10 @@ public class Client implements MessageReceiver {
         }
     }
 
+    public String getConnectedIP(){
+        return connectedIP;
+    }
+    
     public void setName(String name) {
         this.name = name;
         haveSetName = true;
@@ -84,6 +124,24 @@ public class Client implements MessageReceiver {
     
     public String getName(){
         return name;
+    }
+    
+    public void sendFileRequest(Message message,String IP){
+        if(this.isAdmin){
+            sendServerFileRequest(message, IP);
+        }
+        else{
+            sendClientFileRequest(message, IP);
+        }
+        
+    }
+    
+    private void sendServerFileRequest(Message message,String IP){
+            server.sendFileRequest(message, IP);
+    }
+    private void sendClientFileRequest(Message message,String IP){
+            this.sendMessage(message);
+        
     }
 
     public void sendMessage(Message message) {
@@ -95,8 +153,32 @@ public class Client implements MessageReceiver {
         /*System.out.println("receive - my name is "+name+" and I just read: "+
                 message.getText()+"\n and it's from: " +
                 message.getSenderName());*/
-        window.handleMessage(message);
-        System.out.flush();
+        if(message.isFileRequest()){
+            
+            window.createReceiveWindow(message.getFileRequest().getFileName(),
+                    message.getSenderName(),
+                    message.getFileRequest().getFileSize());
+            
+        }
+        if(message.isFileResponse()){
+            
+            try {
+                FileSender sendo = new FileSender(
+                        message.getFileResponse().getPort(),sentFilePath);
+            } catch (IOException ex) {
+                Logger.getLogger(
+                        Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
+        else{
+            window.handleMessage(message);
+            System.out.flush();
+        }
+    }
+    
+    public ClientRep getMyRep(){
+        return myRepresentation;
     }
 
 }

@@ -39,6 +39,7 @@ public class ChatWindow {
     JButton colorButton;
     
     JTextField textField;
+    //SendWindow activeSendWindow;
     
     Client user;
     
@@ -51,15 +52,18 @@ public class ChatWindow {
         
         closeButton = new JButton("Close");
         closeButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) {mainFrame.dispose();
-            user.close();
+            public void actionPerformed(ActionEvent e) {
+                user.close();
+                mainFrame.dispose();
+                
             }});
         
         sendFileButton = new JButton("Send File");
         sendFileButton.addActionListener(new ActionListener() { 
                     public void actionPerformed(ActionEvent e) 
                          {
-                             SendWindow sWindow = new SendWindow(true);}});
+                             SendWindow sWindow = new SendWindow(
+                                     user.isAdmin());}});
         
         colorButton = new JButton("Select color");
         colorButton.addActionListener(new ActionListener() { 
@@ -153,15 +157,20 @@ public class ChatWindow {
             
             String filePath;
             String fileName;
+            String recipient;
             long fileSize;
             
             public SendWindow(boolean isHost){
+                
+               
                 
                 sMainPanel = new JPanel();
                 sMainPanel.setLayout(new GridLayout(5,1));
                 if(isHost == true){
                     recipientField = new JTextField("Recipient...",15);
                     sMainPanel.add(recipientField);
+                }else{
+                    recipient = user.getConnectedIP();
                 }
                 
                 pathField = new JTextField("");
@@ -188,8 +197,8 @@ public class ChatWindow {
                 sMainPanel.add(pathField);
                 sMainPanel.add(browseButton);
                 
-                //portField = new JTextField("Port...",18);
-               // sMainPanel.add(portField);
+                portField = new JTextField("Port...",18);
+                sMainPanel.add(portField);
                 
                 messageField = new JTextField("Message...");
                 sMainPanel.add(messageField);
@@ -199,9 +208,21 @@ public class ChatWindow {
                     public void actionPerformed(ActionEvent e) 
                          
                     {
-                        boolean meme =  user.checkIP(recipientField.getText());
-                        System.out.println(meme + " at ip " 
-                                + recipientField.getText());
+                        //boolean meme =  user.checkIP(recipientField.getText());
+                        //System.out.println(meme + " at ip " 
+                         //       + recipientField.getText());
+                        
+                        user.setSendInfo(Integer.parseInt(portField.getText()),
+                                (int)fileSize,
+                                fileName, filePath);
+                        
+                        FileRequest requesto = new FileRequest(fileName,
+                                (int)fileSize);
+                        
+                        Message fileReqMsg = new Message(user.getName(),
+                        messageField.getText(),requesto);
+                        
+                        user.sendFileRequest(fileReqMsg, recipient);
                         
                          
                          }});
@@ -228,6 +249,11 @@ public class ChatWindow {
                 
                 
             }
+       
+        }
+        
+        public void createReceiveWindow(String name,String sendName, long size){
+            ReceiveWindow windo = new ReceiveWindow(name,sendName,size);
         }
         
         class ReceiveWindow{
@@ -237,26 +263,59 @@ public class ChatWindow {
             JTextField infoField;
             JTextField rPathField;
             JTextField responseField;
+            JTextField rPortField;
             JButton yesButton;
             JButton noButton;
             
             
             String filePath;
-            public ReceiveWindow(String name, long size){
+            public ReceiveWindow(String name,String sendName, long size){
                 
                 infoField = new JTextField("File name: " + name + " Size: " 
-                                            +size);
+                                            +size+". Sent by:" + sendName);
                 infoField.setEditable(false);
                 
-                rPathField = new JTextField("C:/"+name);
+                rPathField = new JTextField("C://"+name);
+                rPortField = new JTextField("port");
                 responseField = new JTextField("Type a response here...");
                 
                 yesButton = new JButton("Accept file");
+                yesButton.addActionListener(new ActionListener(){
+                    
+                public void actionPerformed(ActionEvent e) {
+                   FileResponse respondo = new FileResponse(true,
+                           Integer.parseInt(rPortField.getText()));
+                   Message texado = new Message(user.getColor(),
+                           user.getName(),responseField.getText());
+                   Message messado = new Message(user.getName(),"",respondo);
+                   
+                   user.sendMessage(texado);
+                   user.sendMessage(messado);
+                   
+                
+            }});
+                
                 noButton = new JButton("Deny file");
+                noButton.addActionListener(new ActionListener(){
+                    
+                public void actionPerformed(ActionEvent e) {
+                           FileResponse respondo = new FileResponse(false,
+                           Integer.parseInt(rPortField.getText()));
+                           
+                           Message texado = new Message(user.getColor(),
+                           user.getName(),responseField.getText());
+                           
+                           Message messado = new Message(user.getName(),"",respondo);
+                   
+                    user.sendMessage(texado);
+                    user.sendMessage(messado);
+                
+                }});
                 
                 rMainPanel = new JPanel();
                 rMainPanel.add(infoField);
                 rMainPanel.add(rPathField);
+                rMainPanel.add(rPortField);
                 rMainPanel.add(responseField);
                 rMainPanel.add(yesButton);
                 rMainPanel.add(noButton);

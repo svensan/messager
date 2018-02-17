@@ -11,6 +11,7 @@ public class Comm implements Runnable {
     private PrintWriter output;
     private BufferedReader input;
     private ClientRep myOwner;
+    private boolean running = true;
 
     public Comm(Socket connection, ClientRep myOwner) {
         myConnection = connection;
@@ -41,7 +42,7 @@ public class Comm implements Runnable {
     @Override
     public void run() {
 
-        while (true) {
+        while (running) {
             try {
                 System.out.println("1 ");
                 System.out.flush();
@@ -83,11 +84,12 @@ public class Comm implements Runnable {
     }
 
     public void close() {
-        System.out.println("YYou closed your socket");
+        System.out.println("You closed your socket");
         try {
             input.close();
             output.close();
             myConnection.close();
+            running = false;
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -22,6 +22,7 @@ public class ClientRep {
     private Comm connection;
     private SAXParserFactory saxFactory = SAXParserFactory.newInstance();
     private SAXParser parser;
+    boolean isHost = false;
 
     public ClientRep(Socket connection, MessageReceiver messager) throws Exception {
         this.connection = new Comm(connection, this);
@@ -55,6 +56,13 @@ public class ClientRep {
         connection.close();
     }
 
+    public boolean isHost(){
+        return isHost;
+    }
+    
+    public void setHost(boolean b){
+        isHost = b;
+    }
     public void registerMessageConverter(MessageConverter messageConverter) {
         this.messageConverter = messageConverter;
     }
@@ -108,6 +116,8 @@ public class ClientRep {
         private FileRequest fileRequest;
         private boolean messageContainsFileResponse = false;
         private FileResponse fileResponse;
+        
+        private boolean messageIsDisconnect = false;
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
@@ -144,6 +154,9 @@ public class ClientRep {
         }
 
         public Message getMessage() {
+            if(messageIsDisconnect){
+                return new Message(color,messageSender,text,messageIsDisconnect);
+            }
             if (messageContainsFileRequest) {
                 return new Message(messageSender, text, fileRequest);
             } else if (messageContainsFileResponse) {
@@ -160,7 +173,12 @@ public class ClientRep {
             if (tagName.equalsIgnoreCase("text")) {
                 this.handleTextTag(attributes);
             }
-
+            
+            if (tagName.equalsIgnoreCase("disconnect")){
+                System.out.print("disc tag detected");
+                this.messageIsDisconnect = true;
+            }
+            
             if (tagName.equalsIgnoreCase("encrypted")) {
                 this.handleEncryptedTag(attributes);
             }

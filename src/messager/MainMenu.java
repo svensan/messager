@@ -173,6 +173,8 @@ public class MainMenu{
                 client.setName(name);
                 client.setServer(server);
                 client.getConnection("localhost", port);
+                server.setOwner(client);
+                
                 hMainFrame.dispose();
                 
             }});
