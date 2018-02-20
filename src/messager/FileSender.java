@@ -81,7 +81,7 @@ public class FileSender {
                         System.out.println(current);
                         bar.setValue(current);
                         os.write(mybytearray, 0, mybytearray.length);
-        }
+                        }
 
 
                     os.write(mybytearray,0,mybytearray.length);

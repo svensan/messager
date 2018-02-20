@@ -198,4 +198,7 @@ public class Client implements MessageReceiver {
         return myRepresentation;
     }
 
+    public ChatWindow getWindow(){
+        return window;
+    }
 }

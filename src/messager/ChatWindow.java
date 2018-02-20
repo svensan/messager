@@ -6,6 +6,7 @@
 package messager;
 
 import java.awt.*;
+import static java.awt.Color.BLACK;
 import static java.awt.Color.blue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -401,19 +402,53 @@ public class ChatWindow {
         }
         }
         
-        class ConnectionWindow{
+        public class ConnectionWindow{
             
             JFrame connectMainFrame;
             JButton yesB;
             JButton noB;
             
             
-            public ConnectionWindow(Message message){
+            public ConnectionWindow(Message message,ClientRep sender){
                 
+                connectMainFrame = new JFrame();
+                JTextField text = new JTextField("User "+ 
+                        message.getSenderName()+" wants to connect. "+
+                        "Connection information: "+message.getText());
+                
+                yesB = new JButton("Accept request");
+                yesB.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e) {
+                    sender.acceptConnection();
+                    Message accepto = new Message(BLACK,"Server","User "
+                            + message.getSenderName()+" accepted.");
+                    user.getServer().sendMessage(accepto, sender);
+                    }});
+                
+                noB = new JButton("Deny Request");
+                
+                noB.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e) {
+                        Message accepto = new Message(BLACK,"Server","User "
+                                + message.getSenderName()+" denied.");
+                        
+                        user.getServer().sendMessage(accepto, sender);
+                        user.getServer().removeRep(sender);
+                        sender.closeConnection();
+                    }});
+                
+                connectMainFrame.add(text);
+                connectMainFrame.add(yesB);
+                connectMainFrame.add(noB);
+                connectMainFrame.pack();
+                connectMainFrame.setVisible(true);
             }
             
         }
         
+        public void createConnectionWindow(Message message, ClientRep sender){
+            ConnectionWindow connecto = new ConnectionWindow(message, sender);
+        }
         
         
     }

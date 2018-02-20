@@ -14,6 +14,7 @@ public class Message {
     private boolean isKeyRequest = false;
     private String keyRequestType;
     private boolean disconnect;
+    private boolean isConnectRequest = false;
 
     public Message(Color color, String senderName, String text) {
         this.color = color;
@@ -100,6 +101,15 @@ public class Message {
         return isKeyRequest;
     }
 
+    
+    public boolean isConnectRequest(){
+        
+        return isConnectRequest;
+    }
+    
+    public void setConnectRequest(){
+        isConnectRequest = true;
+    }
     protected String getKeyRequestType() {
         return keyRequestType;
     }

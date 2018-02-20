@@ -120,6 +120,7 @@ public class ClientRep {
         return acceptedConnection;
     }
 
+
     private class MyParceHandler extends DefaultHandler {
 
         private String messageSender;
@@ -268,9 +269,7 @@ public class ClientRep {
             }
         }
     
-        public void acceptConnection(){
-            acceptedConnection = true;
-        }
+
        
     }
     

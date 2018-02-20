@@ -118,6 +118,11 @@ public abstract class Server implements MessageReceiver {
     return ret;
     }
     
+    public void removeRep(ClientRep rep){
+        
+        myClients.remove(rep);
+        
+    }
     
     public abstract void receive(Message message, ClientRep sender);
 }
