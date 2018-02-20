@@ -66,6 +66,10 @@ public abstract class Server implements MessageReceiver {
         receiver.sendString(message);
     }
 
+    public void sendMessage(Message message, ClientRep receiver, String ip) {
+        receiver.sendString(message);
+    }
+
     public void setOwner(Client own){ 
         
         owner = own;
