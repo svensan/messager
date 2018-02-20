@@ -11,8 +11,8 @@ public class Message {
     private FileRequest fileRequest;
     private boolean isFileResponse = false;
     private FileResponse fileResponse;
-    
-    
+    private boolean isKeyRequest = false;
+    private String keyRequestType;
     private boolean disconnect;
 
     public Message(Color color, String senderName, String text) {
@@ -59,6 +59,11 @@ public class Message {
         
     }
 
+    public Message(String senderName, String keyRequestType) {
+        isKeyRequest = true;
+        this.keyRequestType = keyRequestType;
+    }
+
     public Color getColor() {
         return color;
     }
@@ -89,5 +94,13 @@ public class Message {
     
     public boolean isDisconnectMessage(){
         return disconnect;
+    }
+
+    protected boolean isKeyRequest() {
+        return isKeyRequest;
+    }
+
+    protected String getKeyRequestType() {
+        return keyRequestType;
     }
 }
