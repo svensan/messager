@@ -100,7 +100,7 @@ public class Comm implements Runnable {
         try {
             running.set(false); 
             System.out.println("1");
-            runThread.interrupt();
+//            runThread.interrupt();
             System.out.println("2");
 
             myConnection.close();
