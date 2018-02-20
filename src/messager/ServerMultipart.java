@@ -1,10 +1,16 @@
 package messager;
 
+import static java.awt.Color.BLACK;
+
 public class ServerMultipart extends Server {
 
     public void receive(Message message, ClientRep sender) {
         
-        if(!sender.acceptedConnection()){return;}
+        if(!sender.acceptedConnection()){
+            Message deniedMessage = new Message(BLACK, "Server", "Your connection"
+                    + " has not been accepted by the server owner");
+            this.sendMessage(deniedMessage,sender);
+            return;}
         
         System.out.println("msg received");
         if(message.isFileRequest()){
