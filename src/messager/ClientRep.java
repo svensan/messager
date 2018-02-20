@@ -177,7 +177,9 @@ public class ClientRep {
 
         public Message getMessage() {
             if (messageContainsConnectRequest) {
-                return new Message(messageSender);
+                Message ret = new Message(messageSender, text);
+                ret.setConnectRequest();
+                return ret;
             } else if (messageIsDisconnect) {
                 return new Message(color, messageSender, text, messageIsDisconnect);
             }
