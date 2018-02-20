@@ -119,6 +119,9 @@ public class ClientRep {
     public boolean acceptedConnection() {
         return acceptedConnection;
     }
+    public void acceptConnection(){
+            acceptedConnection = true;
+        }
 
 
     private class MyParceHandler extends DefaultHandler {
@@ -275,6 +278,7 @@ public class ClientRep {
             }
         }
     
+
 
        
     }
