@@ -60,7 +60,6 @@ public class ClientRep {
     }
 
     public void closeConnection() {
-
         System.out.println("got so far to lose it all");
         connection.close();
     }
@@ -120,6 +119,7 @@ public class ClientRep {
     public boolean acceptedConnection() {
         return acceptedConnection;
     }
+
     public void acceptConnection(){
             acceptedConnection = true;
         }
