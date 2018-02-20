@@ -6,7 +6,7 @@ public class ServerMultipart extends Server {
         System.out.println("msg received");
         if(message.isFileRequest()){
             System.out.println("file req received");
-            this.sendMessage(message,this.getOwnerRep());
+            this.getOwner().receiveFR(message, sender.getConnectionAdress());
             return;
         }
 
@@ -44,9 +44,12 @@ public class ServerMultipart extends Server {
     }
     
     public void sendFileRequest(Message message, String IP){
+                System.out.println("Looking for: "+ IP);
                 this.getClients().forEach(p -> {
-            if(p.getIP()==IP){
-                this.sendMessage(message, p);
+                    System.out.println("current: "+ p.getConnectionAdress());
+                    if(p.getConnectionAdress().equals(IP)){
+                        System.out.println("IP found" +p.getConnectionAdress());
+                        this.sendMessage(message, p);
             }
         });
     }

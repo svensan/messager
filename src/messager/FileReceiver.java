@@ -38,7 +38,7 @@ public class FileReceiver {
         rFilePath = aRFilePath;
         fileSize = aFS;
         System.out.println("Pre sleep");
-        Thread.sleep(52);
+        Thread.sleep(5000);
         System.out.println("Post sleep");
         ReceiveFile();
         

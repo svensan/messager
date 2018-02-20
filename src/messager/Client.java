@@ -153,6 +153,18 @@ public class Client implements MessageReceiver {
         myRepresentation.sendString(message);
     }
 
+    public void receiveFR(Message message, String ip){
+        
+            if(message.isFileRequest()){
+            System.out.println("ay wtf");
+            window.createReceiveWindow(message.getFileRequest().getFileName(),
+                    message.getSenderName(),
+                    message.getFileRequest().getFileSize(),ip);
+            
+        }
+        
+        
+    }
     public void receive(Message message, ClientRep sender) {
         /*System.out.println("receive - my name is "+name+" and I just read: "+
                 message.getText()+"\n and it's from: " +
@@ -161,7 +173,7 @@ public class Client implements MessageReceiver {
             System.out.println("ay wtf");
             window.createReceiveWindow(message.getFileRequest().getFileName(),
                     message.getSenderName(),
-                    message.getFileRequest().getFileSize());
+                    message.getFileRequest().getFileSize(),connectedIP);
             
         }
         if(message.isFileResponse()&&

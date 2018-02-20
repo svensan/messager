@@ -222,6 +222,10 @@ public class ChatWindow {
                         Message fileReqMsg = new Message(user.getName(),
                         messageField.getText(),requesto);
                         
+                        if(recipient== null){
+                        recipient = recipientField.getText();
+                        }
+                        
                         user.sendFileRequest(fileReqMsg, recipient);
                         
                          
@@ -252,8 +256,9 @@ public class ChatWindow {
        
         }
         
-        public void createReceiveWindow(String name,String sendName, long size){
-            ReceiveWindow windo = new ReceiveWindow(name,sendName,size);
+        public void createReceiveWindow(String name,String sendName, long size,
+                String argIP){
+            ReceiveWindow windo = new ReceiveWindow(name,sendName,size,argIP);
         }
         
         class ReceiveWindow{
@@ -269,7 +274,8 @@ public class ChatWindow {
             
             
             String filePath;
-            public ReceiveWindow(String name,String sendName, long size){
+            public ReceiveWindow(String name,String sendName, long size,
+                    String argIP){
                 
                 infoField = new JTextField("File name: " + name + " Size: " 
                                             +size+". Sent by:" + sendName);
@@ -292,8 +298,17 @@ public class ChatWindow {
                    user.sendMessage(texado);
                    user.sendMessage(messado);
                    
-                   FileReceiver receivaton = new FileReceiver
-                           Integer.parseInt(rPortField.getText()),);
+                   String ip;
+
+                    try {
+                        FileReceiver receivaton = new FileReceiver(
+                                Integer.parseInt(rPortField.getText()),
+                                argIP,rPathField.getText(),(int)size);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ChatWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex) {
+                        Logger.getLogger(ChatWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                    
                 
             }});
