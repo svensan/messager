@@ -4,9 +4,9 @@ public class ServerMultipart extends Server {
 
     public void receive(Message message, ClientRep sender) {
         System.out.println("msg received");
-        if(message.isFileRequest()||message.isFileResponse()){
+        if(message.isFileRequest()){
             System.out.println("file req received");
-            this.sendMessage(message,this.getOwner().getMyRep());
+            this.sendMessage(message,this.getOwnerRep());
             return;
         }
 

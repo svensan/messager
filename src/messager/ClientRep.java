@@ -29,7 +29,7 @@ public class ClientRep {
         this.connection = new Comm(connection, this);
         this.connection.registerMessager(messager);
         this.parser = saxFactory.newSAXParser();
-        this.messageConverter = new AESMessageConverter();
+        this.messageConverter = new DefaultMessageConverter();
     }
 
     public String toString() {

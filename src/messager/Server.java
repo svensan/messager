@@ -47,6 +47,9 @@ public abstract class Server implements MessageReceiver {
         try {
             Socket newClientCon = server.accept();
             ClientRep newClient = new ClientRep(newClientCon, this);
+            if(myClients.size()==0){
+                newClient.setHost(true);
+            }
             myClients.add(newClient);
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,10 +67,14 @@ public abstract class Server implements MessageReceiver {
     }
 
     public void setOwner(Client own){ 
+        
         owner = own;
+        
+        System.out.println("owner set to "+owner.getName());
     }
     
     public Client getOwner(){
+        System.out.println("Owner is " + owner.getName());
         return owner;
     }
     
@@ -100,5 +107,17 @@ public abstract class Server implements MessageReceiver {
         return myClients.stream();
     }
 
+    public ClientRep getOwnerRep(){
+        ClientRep ret = null;
+        for(int i = 0;i<myClients.size();i++){
+            if(myClients.get(i).isHost()){
+                ret = myClients.get(i);
+            }
+        
+        }
+    return ret;
+    }
+    
+    
     public abstract void receive(Message message, ClientRep sender);
 }

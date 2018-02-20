@@ -287,7 +287,7 @@ public class ChatWindow {
                            Integer.parseInt(rPortField.getText()));
                    Message texado = new Message(user.getColor(),
                            user.getName(),responseField.getText());
-                   Message messado = new Message(user.getName(),"",respondo);
+                   Message messado = new Message(user.getName(),user.getName(),respondo);
                    
                    user.sendMessage(texado);
                    user.sendMessage(messado);

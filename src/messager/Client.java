@@ -25,6 +25,8 @@ public class Client implements MessageReceiver {
     private String sentFileName;
     private String sentFilePath;
     
+    private boolean waitingForFile;
+    
 
     public Client(boolean admin) {
         haveSetName = false;
@@ -127,6 +129,7 @@ public class Client implements MessageReceiver {
     }
     
     public void sendFileRequest(Message message,String IP){
+        waitingForFile = true;
         if(this.isAdmin){
             sendServerFileRequest(message, IP);
         }
@@ -154,14 +157,15 @@ public class Client implements MessageReceiver {
                 message.getText()+"\n and it's from: " +
                 message.getSenderName());*/
         if(message.isFileRequest()){
-            
+            System.out.println("ay wtf");
             window.createReceiveWindow(message.getFileRequest().getFileName(),
                     message.getSenderName(),
                     message.getFileRequest().getFileSize());
             
         }
-        if(message.isFileResponse()){
-            
+        if(message.isFileResponse()&&
+                waitingForFile){
+            waitingForFile = false;
             try {
                 FileSender sendo = new FileSender(
                         message.getFileResponse().getPort(),sentFilePath);
