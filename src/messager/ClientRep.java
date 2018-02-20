@@ -23,46 +23,53 @@ public class ClientRep {
     private SAXParserFactory saxFactory = SAXParserFactory.newInstance();
     private SAXParser parser;
     boolean isHost = false;
+    byte[] key;
 
     public ClientRep(Socket connection, MessageReceiver messager) throws Exception {
         this.connection = new Comm(connection, this);
         this.connection.registerMessager(messager);
         this.parser = saxFactory.newSAXParser();
-        this.messageConverter = new DefaultMessageConverter();
+        this.messageConverter = new AESMessageConverter();
     }
-    
-    public String toString(){
-        
+
+    public String toString() {
+
         return connection.getIP();
     }
 
-    public Socket getSocket(){
-        
+    public Socket getSocket() {
+
         return connection.getSocket();
     }
 
-    public String getIP(){
+    public String getIP() {
         //System.out.println("ip fetched: "+connection.getIP());
         return connection.getIP();
     }
+
+    protected byte[] getKey() {
+        return key;
+    }
+
     public void sendString(Message message) {
         String outPutString = handleOutputMessage(message);
         connection.putStringOnStream(outPutString);
     }
 
     public void closeConnection() {
-        
+
         System.out.println("got so far to lose it all");
         connection.close();
     }
 
-    public boolean isHost(){
+    public boolean isHost() {
         return isHost;
     }
-    
-    public void setHost(boolean b){
+
+    public void setHost(boolean b) {
         isHost = b;
     }
+
     public void registerMessageConverter(MessageConverter messageConverter) {
         this.messageConverter = messageConverter;
     }
@@ -110,13 +117,13 @@ public class ClientRep {
         private boolean haveSetName = false;
         private boolean haveSetColor = false;
         private boolean isEncrypted = false;
-        private String key;
         private String type;
         private boolean messageContainsFileRequest = false;
         private FileRequest fileRequest;
         private boolean messageContainsFileResponse = false;
         private FileResponse fileResponse;
-        
+        private EncryptionFactory encryptionFactory = new EncryptionFactory();
+
         private boolean messageIsDisconnect = false;
 
         @Override
@@ -136,13 +143,14 @@ public class ClientRep {
                 try {
                     isEncrypted = false;
                     String encryptedMessageHex = new String(ch, start, length);
-                    String encryptedMessage = this.toText(encryptedMessageHex);
 
-                    String text = ClientRep.this.encryption.decrypt(type, key,
-                            "RandomInitVector", encryptedMessage);
-                    InputStream stream = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8.name()));
+                    byte[] encryptedBytes = DatatypeConverter.parseHexBinary(encryptedMessageHex);
+
+                    Encryptor encryptor = encryptionFactory.getEncryptor(type);
+                    byte[] decryptedBytes = encryptor.decrypt(key, encryptedBytes);
 
                     SAXParser newParser = ClientRep.this.getParser();
+                    InputStream stream = new ByteArrayInputStream(decryptedBytes);
 
                     newParser.parse(stream, this);
                 } catch (Exception e) {
@@ -154,8 +162,8 @@ public class ClientRep {
         }
 
         public Message getMessage() {
-            if(messageIsDisconnect){
-                return new Message(color,messageSender,text,messageIsDisconnect);
+            if (messageIsDisconnect) {
+                return new Message(color, messageSender, text, messageIsDisconnect);
             }
             if (messageContainsFileRequest) {
                 return new Message(messageSender, text, fileRequest);
@@ -173,12 +181,12 @@ public class ClientRep {
             if (tagName.equalsIgnoreCase("text")) {
                 this.handleTextTag(attributes);
             }
-            
-            if (tagName.equalsIgnoreCase("disconnect")){
+
+            if (tagName.equalsIgnoreCase("disconnect")) {
                 System.out.print("disc tag detected");
                 this.messageIsDisconnect = true;
             }
-            
+
             if (tagName.equalsIgnoreCase("encrypted")) {
                 this.handleEncryptedTag(attributes);
             }
@@ -200,7 +208,7 @@ public class ClientRep {
         private void handleEncryptedTag(Attributes attributes) {
             isEncrypted = true;
             type = attributes.getValue("type");
-            key = this.toText(attributes.getValue("key"));
+            key = DatatypeConverter.parseHexBinary(attributes.getValue("key"));
         }
 
         private void handleMessageTag(Attributes attributes) {

@@ -6,13 +6,11 @@ import java.security.SecureRandom;
 public class AESMessageConverter extends AbstractMessageConverter implements MessageConverter {
 
     private Encryptor encryption;
-    private String key;
     private static final String ALGORITHM = "AES";
-    private SecureRandom random;
 
     public AESMessageConverter() throws Exception {
-        this.encryption = new Encryptor();
-        this.random = new SecureRandom();
+        EncryptionFactory factory = new EncryptionFactory();
+        this.encryption = factory.getEncryptor(ALGORITHM);
     }
 
     public static String toHexadecimal(String text) {
@@ -28,22 +26,15 @@ public class AESMessageConverter extends AbstractMessageConverter implements Mes
     public String convertMessage(Message message) {
         String XMLMessage = getXMLFromMessage(message);
 
-        byte[] byteKey = new byte[128];
-        System.out.println(byteKey.length);
-        random.nextBytes(byteKey);
-
         try {
-            String key = new String(byteKey, "UTF-8");
-            System.out.println(key.getBytes("UTF-8").length);
-
-            String encryptedString = encryption.encrypt(ALGORITHM, key,
-                    "RandomInitVector", XMLMessage);
+            byte[] key = encryption.generateKey();
+            byte[] encryptedBytes = encryption.encrypt(key, XMLMessage.getBytes("UTF-8"));
 
             String[] attributeName = {"type", "key"};
-            String[] attributeValue = {ALGORITHM, toHexadecimal(key)};
+            String[] attributeValue = {ALGORITHM, DatatypeConverter.printHexBinary(key)};
 
             String holdString = addTagWithAttribute("encrypted", attributeName, attributeValue,
-                    toHexadecimal(encryptedString));
+                    DatatypeConverter.printHexBinary(encryptedBytes));
 
             return addTagWithAttribute("message", "sender", message.getSenderName(), holdString);
         } catch (Exception e) {
