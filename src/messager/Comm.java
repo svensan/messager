@@ -19,7 +19,7 @@ public class Comm implements Runnable {
         this.myOwner = myOwner;
 
         this.setUpStreams();
-        Thread runThread = new Thread(this);
+        runThread = new Thread(this);
         runThread.start();
     }
 
