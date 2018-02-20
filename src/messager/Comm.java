@@ -12,14 +12,15 @@ public class Comm implements Runnable {
     private BufferedReader input;
     private ClientRep myOwner;
     private boolean running = true;
+    private Thread runThread;
 
     public Comm(Socket connection, ClientRep myOwner) {
         myConnection = connection;
         this.myOwner = myOwner;
 
         this.setUpStreams();
-        Thread myThread = new Thread(this);
-        myThread.start();
+        Thread runThread = new Thread(this);
+        runThread.start();
     }
 
     public Socket getSocket(){
@@ -57,6 +58,7 @@ public class Comm implements Runnable {
                 receiveMessage(message);
                 System.out.flush();
             } catch (Exception e) {
+                this.close();
                 e.printStackTrace();
             }
         }
@@ -86,6 +88,7 @@ public class Comm implements Runnable {
     public void close() {
         System.out.println("You closed your socket");
         try {
+            runThread.interrupt();
             input.close();
             output.close();
             myConnection.close();
