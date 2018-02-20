@@ -32,6 +32,10 @@ public abstract class AbstractMessageConverter implements MessageConverter{
     protected String addTagWithAttribute(String tagName, String attributeName, String attributeValue, String text) {
         return String.format("<%1$2s %2$2s=\"%3$2s\">%4$2s</%1$2s>", tagName, attributeName, attributeValue, text);
     }
+
+    protected String addTagWithAttribute(String tagName, String text) {
+        return String.format("<%1$2s>%2$s</%1$2s>", tagName, text);
+    }
     
     protected String getXMLFromMessage(Message message) {
 
@@ -57,6 +61,8 @@ public abstract class AbstractMessageConverter implements MessageConverter{
 
             return addTagWithAttribute("fileresponse", attributeName,
                     attributeValue, message.getText());
+        } else if (message.isConnectRequest()) {
+            return addTagWithAttribute("request", message.getText());
         } else {
             String[] attributeName = {"color"};
             String[] attibuteValue = {this.getHexColor(message.getColor())};
