@@ -43,7 +43,7 @@ public class Comm implements Runnable {
     public void run() {
 
         while (running) {
-            try {
+            try {          
                 System.out.println("1 ");
                 System.out.flush();
                 String stringMessage = input.readLine();

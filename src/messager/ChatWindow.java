@@ -405,6 +405,7 @@ public class ChatWindow {
         public class ConnectionWindow{
             
             JFrame connectMainFrame;
+            JPanel panelo;
             JButton yesB;
             JButton noB;
             
@@ -424,6 +425,8 @@ public class ChatWindow {
                     Message accepto = new Message(BLACK,"Server","User "
                             + message.getSenderName()+" accepted.");
                     user.getServer().sendMessage(accepto, sender);
+                    
+                    connectMainFrame.dispose();
                     }});
                 
                 noB = new JButton("Deny Request");
@@ -436,11 +439,13 @@ public class ChatWindow {
                         user.getServer().sendMessage(accepto, sender);
                         user.getServer().removeRep(sender);
                         sender.closeConnection();
+                        connectMainFrame.dispose();
                     }});
-                
-                connectMainFrame.add(text);
-                connectMainFrame.add(yesB);
-                connectMainFrame.add(noB);
+                panelo = new JPanel();
+                panelo.add(text);
+                panelo.add(yesB);
+                panelo.add(noB);
+                connectMainFrame.add(panelo);
                 connectMainFrame.pack();
                 connectMainFrame.setVisible(true);
             }
