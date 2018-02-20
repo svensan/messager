@@ -49,6 +49,7 @@ public abstract class Server implements MessageReceiver {
             ClientRep newClient = new ClientRep(newClientCon, this);
             if(myClients.size()==0){
                 newClient.setHost(true);
+                newClient.acceptConnection();
             }
             myClients.add(newClient);
         } catch (Exception e) {
