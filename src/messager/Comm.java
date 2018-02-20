@@ -13,15 +13,19 @@ public class Comm implements Runnable {
     private PrintWriter output;
     private BufferedReader input;
     private ClientRep myOwner;
+<<<<<<< HEAD
     private AtomicBoolean running;
     private Thread runThread;
+=======
+    private boolean running = true;
+>>>>>>> 89e072372b16883dc9ca25a3b70cd574caf9acef
 
     public Comm(Socket connection, ClientRep myOwner) {
         myConnection = connection;
         this.myOwner = myOwner;
         running = new AtomicBoolean(true);
         this.setUpStreams();
-        runThread = new Thread(this);
+        Thread runThread = new Thread(this);
         runThread.start();
     }
 
