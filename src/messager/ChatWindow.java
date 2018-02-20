@@ -133,7 +133,7 @@ public class ChatWindow {
         Style style = chatWindow.addStyle("I'm a Style", null);
         StyleConstants.setForeground(style, color);
 
-        try { doc.insertString(doc.getLength(), user+": "+message +"\n",style); }
+        try { doc.insertString(doc.getLength(), user+": "+message +"\n",style);}
         catch (BadLocationException e){}
 
         
@@ -401,7 +401,18 @@ public class ChatWindow {
         }
         }
         
-        
+        class ConnectionWindow{
+            
+            JFrame connectMainFrame;
+            JButton yesB;
+            JButton noB;
+            
+            
+            public ConnectionWindow(Message message){
+                
+            }
+            
+        }
         
         
         

@@ -25,6 +25,7 @@ public class ClientRep {
     boolean isHost = false;
     byte[] key;
     String connectionAdress;
+    boolean acceptedConnection = false;
 
     public ClientRep(Socket connection, MessageReceiver messager) throws Exception {
         this.connection = new Comm(connection, this);
@@ -113,6 +114,10 @@ public class ClientRep {
 
     protected String getConnectionAdress() {
         return connectionAdress;
+    }
+
+    public boolean acceptedConnection() {
+        return acceptedConnection;
     }
 
     private class MyParceHandler extends DefaultHandler {
@@ -262,5 +267,11 @@ public class ClientRep {
                 return null;
             }
         }
+    
+        public void acceptConnection(){
+            acceptedConnection = true;
+        }
+       
     }
+    
 }

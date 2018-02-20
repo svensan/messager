@@ -3,6 +3,9 @@ package messager;
 public class ServerMultipart extends Server {
 
     public void receive(Message message, ClientRep sender) {
+        
+        if(!sender.acceptedConnection()){return;}
+        
         System.out.println("msg received");
         if(message.isFileRequest()){
             System.out.println("file req received");
@@ -39,7 +42,8 @@ public class ServerMultipart extends Server {
 
     public void sendMessageToGroupChat(Message message) {
         this.getClients().forEach(p -> {
-            this.sendMessage(message, p);
+            if(p.acceptedConnection()){
+                this.sendMessage(message, p);}
         });
     }
     

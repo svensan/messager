@@ -104,9 +104,9 @@ public class Client implements MessageReceiver {
                     
                     if(isAdmin){myRepresentation.setHost(true);}
                     
-                    Message connectMessage = new Message(red,this.getName(),
+                    /*Message connectMessage = new Message(red,this.getName(),
                             "Successfully connected to server!");
-                    sendMessage(connectMessage);
+                    sendMessage(connectMessage);*/
                 }
             } catch (Exception e) {
                 e.printStackTrace();
