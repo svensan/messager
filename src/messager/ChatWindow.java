@@ -409,7 +409,13 @@ public class ChatWindow {
             JButton yesB;
             JButton noB;
             
-            
+            public ConnectionWindow(ClientRep sender){
+                this(new Message(BLACK,"UNKNOWN",
+                        "User may be trying to connect with a shitty client")
+                        ,sender);
+                
+                
+            }
             public ConnectionWindow(Message message,ClientRep sender){
                 
                 connectMainFrame = new JFrame();
@@ -455,6 +461,9 @@ public class ChatWindow {
         
         public void createConnectionWindow(Message message, ClientRep sender){
             ConnectionWindow connecto = new ConnectionWindow(message, sender);
+        }
+        public void createConnectionWindow(ClientRep sender){
+            ConnectionWindow connecto = new ConnectionWindow(sender);
         }
         
         

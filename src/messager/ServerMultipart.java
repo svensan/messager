@@ -10,9 +10,17 @@ public class ServerMultipart extends Server {
         if(!sender.acceptedConnection()){
             
             if(message.isConnectRequest()){
-                
+                sender.setFirstMessage(true);
                 this.getOwner().getWindow().createConnectionWindow(
                         message,sender);
+                return;
+            }
+            else if(!sender.firstMessage()){
+                sender.setFirstMessage(true);
+                this.getOwner().getWindow().createConnectionWindow(sender);
+                Message deniedMessage = new Message(BLACK, "Server", "Your "
+                        + "client seems like garbage fam i wont lie");
+                this.sendMessage(deniedMessage,sender);
                 return;
             }
             Message deniedMessage = new Message(BLACK, "Server", "Your connection"

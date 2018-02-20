@@ -23,6 +23,7 @@ public class ClientRep {
     private SAXParserFactory saxFactory = SAXParserFactory.newInstance();
     private SAXParser parser;
     boolean isHost = false;
+    boolean firstMessage = false;
     byte[] key;
     String connectionAdress;
     boolean acceptedConnection = false;
@@ -45,6 +46,14 @@ public class ClientRep {
         return connection.getSocket();
     }
 
+    public boolean firstMessage(){
+        return firstMessage;
+    }
+    
+    public void setFirstMessage(boolean b){
+        firstMessage = b;
+    }
+    
     public String getIP() {
         //System.out.println("ip fetched: "+connection.getIP());
         return connection.getIP();
