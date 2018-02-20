@@ -89,7 +89,7 @@ public class ClientRep {
             this.useParser(stream, myHandler);
         } catch (Exception e) {
             System.out.println("OOOOps");
-            return new Message(Color.red, "ERROR", "Sender: "+this.getIP()+" sen broken XML.");
+            return new Message(Color.RED, "ERROR", "Sender: "+this.getIP()+" sen broken XML.");
         }
 
         return myHandler.getMessage();

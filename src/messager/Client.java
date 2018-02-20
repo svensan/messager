@@ -107,6 +107,11 @@ public class Client implements MessageReceiver {
                     /*Message connectMessage = new Message(red,this.getName(),
                             "Successfully connected to server!");
                     sendMessage(connectMessage);*/
+                    
+                    Message request = new Message(Color.BLACK, 
+                            this.name, "hey man id like to connect");
+                    request.setConnectRequest();
+                    sendMessage(request);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
