@@ -57,6 +57,7 @@ public class Comm implements Runnable {
                 receiveMessage(message);
                 System.out.flush();
             } catch (Exception e) {
+                this.close();
                 e.printStackTrace();
             }
         }
