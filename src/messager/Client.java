@@ -27,6 +27,7 @@ public class Client implements MessageReceiver {
     
     private boolean waitingForFile;
     
+    
 
     public Client(boolean admin) {
         haveSetName = false;

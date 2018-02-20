@@ -292,6 +292,9 @@ public class ChatWindow {
                    user.sendMessage(texado);
                    user.sendMessage(messado);
                    
+                   FileReceiver receivaton = new FileReceiver
+                           Integer.parseInt(rPortField.getText()),);
+                   
                 
             }});
                 
