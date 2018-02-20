@@ -133,6 +133,7 @@ public class ClientRep {
         private FileRequest fileRequest;
         private boolean messageContainsFileResponse = false;
         private FileResponse fileResponse;
+        private boolean messageContainsConnectRequest = false;
         private EncryptionFactory encryptionFactory = new EncryptionFactory();
 
         private boolean messageIsDisconnect = false;
@@ -175,7 +176,9 @@ public class ClientRep {
         }
 
         public Message getMessage() {
-            if (messageIsDisconnect) {
+            if (messageContainsConnectRequest) {
+                return new Message(messageSender);
+            } else if (messageIsDisconnect) {
                 return new Message(color, messageSender, text, messageIsDisconnect);
             }
             if (messageContainsFileRequest) {
@@ -247,6 +250,7 @@ public class ClientRep {
         }
 
         private void handeRequestTag(Attributes attributes) {
+            messageContainsConnectRequest = true;
         }
 
         private Color createColorFromHex(String hexColor) {
