@@ -88,7 +88,6 @@ public class Comm implements Runnable {
     public void close() {
         System.out.println("You closed your socket");
         try {
-            runThread.interrupt();
             input.close();
             output.close();
             myConnection.close();
