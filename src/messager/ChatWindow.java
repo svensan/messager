@@ -198,8 +198,8 @@ public class ChatWindow {
                 sMainPanel.add(pathField);
                 sMainPanel.add(browseButton);
                 
-                portField = new JTextField("Port...",18);
-                sMainPanel.add(portField);
+              //  portField = new JTextField("Port...",18);
+                //sMainPanel.add(portField);
                 
                 messageField = new JTextField("Message...");
                 sMainPanel.add(messageField);
@@ -213,9 +213,9 @@ public class ChatWindow {
                         //System.out.println(meme + " at ip " 
                          //       + recipientField.getText());
                         
-                        user.setSendInfo(Integer.parseInt(portField.getText()),
+                       /* user.setSendInfo(Integer.parseInt(portField.getText()),
                                 (int)fileSize,
-                                fileName, filePath);
+                                fileName, filePath);*/
                         
                         FileRequest requesto = new FileRequest(fileName,
                                 (int)fileSize);
@@ -414,7 +414,8 @@ public class ChatWindow {
                 connectMainFrame = new JFrame();
                 JTextField text = new JTextField("User "+ 
                         message.getSenderName()+" wants to connect. "+
-                        "Connection information: "+message.getText());
+                        "Connection information: "+message.getText(),
+                        30+message.getText().length());
                 
                 yesB = new JButton("Accept request");
                 yesB.addActionListener(new ActionListener(){
