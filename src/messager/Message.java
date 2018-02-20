@@ -1,10 +1,11 @@
 package messager;
 
 import java.awt.*;
+import static java.awt.Color.BLACK;
 
 public class Message {
 
-    private Color color;
+    private Color color=BLACK;
     private String senderName;
     private String text;
     private boolean isFileRequest = false;
