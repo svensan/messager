@@ -24,9 +24,11 @@ public class ClientRep {
     private SAXParser parser;
     boolean isHost = false;
     byte[] key;
+    String connectionAdress;
 
     public ClientRep(Socket connection, MessageReceiver messager) throws Exception {
         this.connection = new Comm(connection, this);
+        this.connectionAdress = connection.getInetAddress().getHostAddress();
         this.connection.registerMessager(messager);
         this.parser = saxFactory.newSAXParser();
         this.messageConverter = new DefaultMessageConverter();
@@ -107,6 +109,10 @@ public class ClientRep {
         }
 
         return null;
+    }
+
+    protected String getConnectionAdress() {
+        return connectionAdress;
     }
 
     private class MyParceHandler extends DefaultHandler {
