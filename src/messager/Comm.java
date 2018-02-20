@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Comm implements Runnable {
     private MessageReceiver receiver;
@@ -11,13 +13,13 @@ public class Comm implements Runnable {
     private PrintWriter output;
     private BufferedReader input;
     private ClientRep myOwner;
-    private boolean running = true;
+    private AtomicBoolean running;
     private Thread runThread;
 
     public Comm(Socket connection, ClientRep myOwner) {
         myConnection = connection;
         this.myOwner = myOwner;
-
+        running = new AtomicBoolean(true);
         this.setUpStreams();
         runThread = new Thread(this);
         runThread.start();
@@ -43,7 +45,7 @@ public class Comm implements Runnable {
     @Override
     public void run() {
 
-        while (running) {
+        while (getRunning()) {
             try {          
                 System.out.println("1 ");
                 System.out.flush();
@@ -57,7 +59,10 @@ public class Comm implements Runnable {
                 Message message = myOwner.handleInputMessage(stringMessage);
                 receiveMessage(message);
                 System.out.flush();
-            } catch (Exception e) {
+            } catch(SocketException e){
+                System.out.println("just as planned");
+            }
+            catch (Exception e) {
                 this.close();
                 e.printStackTrace();
             }
@@ -85,13 +90,31 @@ public class Comm implements Runnable {
         this.receiver = messager;
     }
 
+    
+    public boolean getRunning(){
+        
+        return running.get();
+    }
     public void close() {
         System.out.println("You closed your socket");
         try {
-            input.close();
-            output.close();
+            running.set(false); 
+            System.out.println("1");
+            runThread.interrupt();
+            System.out.println("2");
+
             myConnection.close();
-            running = false;
+            System.out.println("5");
+            try{
+            input.close();
+            System.out.println("3");
+            output.close();
+            System.out.println("4");}catch(SocketException e){
+                System.out.println("fackit");
+                
+            }
+            
+
         } catch (Exception e) {
             e.printStackTrace();
         }

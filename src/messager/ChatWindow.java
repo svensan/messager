@@ -437,9 +437,10 @@ public class ChatWindow {
                                 + message.getSenderName()+" denied.");
                         
                         user.getServer().sendMessage(accepto, sender);
+
+                        connectMainFrame.dispose();
                         sender.closeConnection();
                         user.getServer().removeRep(sender);
-                        connectMainFrame.dispose();
                     }});
                 panelo = new JPanel();
                 panelo.add(text);
