@@ -61,9 +61,9 @@ public class Message {
         
     }
 
-    public Message(String senderName, String keyRequestType) {
-        isKeyRequest = true;
-        this.keyRequestType = keyRequestType;
+    public Message(String senderName, String text) {
+        this.senderName=senderName;
+        this.text = text;
     }
 
     public Color getColor() {
