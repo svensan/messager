@@ -89,6 +89,7 @@ public class ClientRep {
             this.useParser(stream, myHandler);
         } catch (Exception e) {
             System.out.println("OOOOps");
+            return new Message(Color.red, "ERROR", "Sender: "+this.getIP()+" sen broken XML.");
         }
 
         return myHandler.getMessage();
@@ -220,6 +221,10 @@ public class ClientRep {
             if (tagName.equalsIgnoreCase("fileresponse")) {
                 this.handleFileResponseTag(attributes);
             }
+
+            if (tagName.equalsIgnoreCase("request")) {
+                this.handleRequestTag(attributes);
+            }
         }
 
         private void handleTextTag(Attributes attributes) {
@@ -255,7 +260,7 @@ public class ClientRep {
             messageContainsFileResponse = true;
         }
 
-        private void handeRequestTag(Attributes attributes) {
+        private void handleRequestTag(Attributes attributes) {
             messageContainsConnectRequest = true;
         }
 
