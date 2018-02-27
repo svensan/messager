@@ -6,6 +6,11 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 
 public class AESEncryptor extends Encryptor {
+    /*
+    Den här tar hand om kryptering
+    
+    TODO KOMMENTERA DETTA SVEN!!!
+    */
 
     protected byte[] encrypt(byte[] key, byte[] value) {
         try {

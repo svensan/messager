@@ -3,6 +3,12 @@ package messager;
 import java.awt.*;
 
 public abstract class AbstractMessageConverter implements MessageConverter{
+    /*
+    Abstrakt klass för att konvertera message klassen till en sträng som kan
+    skickas över streamen. Implementeras i nån annan fil
+    
+    TODO kommentera DETTA SVEN !!!
+    */
 
     public abstract String convertMessage(Message message);
 

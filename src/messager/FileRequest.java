@@ -1,6 +1,9 @@
 package messager;
 
 public class FileRequest {
+    /*
+    unironcially vad är de här
+    */
 
     private int fileSize;
     private String fileName;

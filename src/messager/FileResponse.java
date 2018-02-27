@@ -1,6 +1,9 @@
 package messager;
 
 public class FileResponse {
+    /*
+    ????
+    */
 
     private int port;
     private boolean acceptedFileRequest;

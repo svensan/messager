@@ -4,6 +4,14 @@ import java.awt.*;
 import static java.awt.Color.BLACK;
 
 public class Message {
+    /*
+    En klass som är ett medellande. Kan  vara en filerequest eller liknande
+    Ganska självförklarligt, det mesta här.
+    
+    VÄLDIGT många konstruktorer för olika typer av mesg.
+    
+    massa get o set.
+    */
 
     private Color color=BLACK;
     private String senderName;

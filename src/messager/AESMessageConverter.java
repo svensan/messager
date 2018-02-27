@@ -2,7 +2,12 @@ package messager;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.SecureRandom;
+/*
+TODO KOMMENTERA DETTA SVEN !!
 
+verkar bygga på message konverter abstrakta klassen så vi använder den för att
+ta messages till strängar som kan skickas över konnection ???
+*/
 public class AESMessageConverter extends AbstractMessageConverter implements MessageConverter {
 
     private Encryptor encryption;

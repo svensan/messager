@@ -1,7 +1,7 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+Den här filen har huvudmenyn och relaterade submenyer i sig. 
+Basically bara massa swing komponenter, men den interagerar lite med client och
+server klasserna när man skall connecta osv.
  */
 package messager;
 
@@ -19,6 +19,9 @@ import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
  */
 public class MainMenu{
     
+    /*
+    Swing sakerna här för easy access
+    */
     JFrame mainFrame; // mainpanel sitter på mainframe
     JPanel mainPanel; // ALLT sitter på mainpanel
     JPanel buttonPanel; 
@@ -29,7 +32,10 @@ public class MainMenu{
     
     public MainMenu(){
 
-        
+        /*
+        Allt skapas och trycks in i rätt behållare här.
+        Actionlisteners definieras direkt i knapparna.
+        */
         mainFrame = new JFrame();
         
         mainPanel = new JPanel();
@@ -39,6 +45,7 @@ public class MainMenu{
         connectButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
+                // skapar en ny connectmeny
                 ConnectMenu newCMenu = new ConnectMenu();
             }
             
@@ -50,6 +57,7 @@ public class MainMenu{
         hostButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
+                //skapar en ny host meny
                 HostMenu newMenu = new HostMenu();
             }
             
@@ -61,11 +69,15 @@ public class MainMenu{
         closeButton.addActionListener(new ActionListener() { 
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    // stänger programmet
                     mainFrame.dispose();
                 }
             }
             );
         
+        /*
+        allt trycks in
+        */
         mainPanel.add(connectButton);
         mainPanel.add(hostButton);
         mainPanel.add(closeButton);
@@ -80,6 +92,9 @@ public class MainMenu{
     }
     
     class ConnectMenu{
+        /*
+        menyn som kommer upp när man vill connecta till en server
+        */
         JFrame cMainFrame; // mainpanel sitter på mainframe
         JPanel cMainPanel; // ALLT sitter på mainpanel
         JTextField adressBar;
@@ -90,6 +105,10 @@ public class MainMenu{
         
         public ConnectMenu(){
             
+            /*
+            All swing skapas. Actionlisteners definieras inne i knapparna så 
+            att säga.
+            */
             cMainFrame = new JFrame();
             
             cMainPanel = new JPanel();
@@ -104,6 +123,13 @@ public class MainMenu{
             cConnectButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
+                /*
+                Gör om input datan till information för connecten,
+                skapar sedan en ny klient och ansluter.
+                
+                TODO FELHANTERING
+                
+                */
                 int port = Integer.parseInt(portBar.getText());
                 String name = cNameBar.getText();
                 String adress = adressBar.getText();
@@ -119,6 +145,7 @@ public class MainMenu{
             cCloseButton.addActionListener(new ActionListener() { 
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    // dödar menyn
                     cMainFrame.dispose();
                 }
             }
@@ -141,6 +168,11 @@ public class MainMenu{
     } 
     
     class HostMenu{
+        
+        /*
+        Menyn som kommer upp när man vill hosta. Actionlisteners def i knapparna
+        
+        */
         JFrame hMainFrame; // mainpanel sitter på mainframe
         JPanel hMainPanel; // ALLT sitter på mainpanel
         JTextField adressBar;
@@ -163,6 +195,16 @@ public class MainMenu{
             hConnectButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
+                /*
+                Tar input datan och sätter upp en server med den. Skapar 
+                sedan en klient i admin läge och ansluter denne till servern.
+                Klienten sätts sen som admin i servern, tag en titt på dem
+                klasserna för o se hur de håller koll på varandra och använder
+                varandra.
+                
+                TODO FELHANTERING
+                
+                */
                 int port = Integer.parseInt(adressBar.getText());
                 String name = nameBar.getText();
                 ServerMultipart server = new ServerMultipart();

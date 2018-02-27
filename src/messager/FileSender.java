@@ -22,6 +22,10 @@ import javax.swing.JProgressBar;
  * @author maxoliveberg
  */
 public class FileSender {
+    /*
+    Öppnar upp en server o skickar över en fil till den som ansluter.
+    motparten till filereceiver. Skickar fil o sånt baserat på indata
+    */
     
     int socketPort;
     String sentFilePath;
@@ -40,6 +44,9 @@ public class FileSender {
     }
     
     private void RunServer() throws FileNotFoundException, IOException{
+        /*
+        sätter upp saker o chillar sen på anslutning
+        */
         
         FileInputStream fis = null;
         BufferedInputStream bis = null;
@@ -63,7 +70,9 @@ public class FileSender {
                     os = sock.getOutputStream();
                     fis = new FileInputStream(sentFile);
                     bis = new BufferedInputStream(fis);
-                    //bis.read(mybytearray,0,mybytearray.length);
+                    /*
+                    trycket upp en bar enl krav
+                    */
                     JFrame pF = new JFrame();
                     JProgressBar bar = new JProgressBar();
                     bar.setMaximum(fileSize);
@@ -77,6 +86,10 @@ public class FileSender {
                     
                     while((bytesSent = bis.read(mybytearray, 0, 
                             mybytearray.length))!= -1) {
+                        /*
+                        kollar stegvis hur mycekt den lyckas skriva över
+                        o uppdaterar sendbar därefter.
+                        */
                         current += bytesSent;
                         System.out.println(current);
                         bar.setValue(current);

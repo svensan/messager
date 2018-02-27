@@ -22,6 +22,11 @@ import javax.swing.JProgressBar;
  * @author maxoliveberg
  */
 public class FileReceiver {
+    /*
+    Den här klassen försöker koppla upp mot en server som sätta upp av
+    filesender o laddar sen hem filen med path o allt enligt indata
+    
+    */
     
     int socketPort;
     String rFilePath;
@@ -37,6 +42,12 @@ public class FileReceiver {
         serverIP = aServerIP;
         rFilePath = aRFilePath;
         fileSize = aFS;
+        
+        /*
+        Sover en liten stund så motparten får set up
+        
+        TODO fixa timing
+        */
         System.out.println("Pre sleep");
         Thread.sleep(5000);
         System.out.println("Post sleep");
@@ -46,6 +57,11 @@ public class FileReceiver {
     }
     
     private void ReceiveFile() throws IOException{
+        /*
+        Stora delar av de här är baserat på något jag googlade upp, även om
+        det ändrats en hel del från det stadiet. Tex variabel namn är fortf
+        samma
+        */
         
         int bytesRead;
         int current = 0;
@@ -53,21 +69,21 @@ public class FileReceiver {
         BufferedOutputStream bos = null;
         Socket sock = null;
         try {
+            /*
+            Ansluter sig o sätter upp alla strömmar osv 
+            */
             sock = new Socket(serverIP, socketPort);
             System.out.println("Connecting...");
             InputStream is = sock.getInputStream();
-            /*
-            BufferedReader in = 
-                    new BufferedReader(
-                            new InputStreamReader(is));
-            fileSize = Integer.parseInt(in.readLine());
-            System.out.println("file size: " + fileSize);*/
             byte [] mybytearray  = new byte [fileSize];
             fos = new FileOutputStream(rFilePath);
             bos = new BufferedOutputStream(fos);
             bytesRead = is.read(mybytearray,0,mybytearray.length);
             current = bytesRead;
             System.out.println(current);
+            /* 
+            trycker upp en progressbar enligt kravens
+            */
             JFrame pF = new JFrame();
             JProgressBar bar = new JProgressBar();
             bar.setMaximum(fileSize);
@@ -77,6 +93,9 @@ public class FileReceiver {
             
             
             do {
+                /*
+                Checkar vad som lästs o uppdaterar baren. skriver osv
+                */
                 bytesRead =
                 is.read(mybytearray, current, (mybytearray.length-current));
                 System.out.println(bytesRead);

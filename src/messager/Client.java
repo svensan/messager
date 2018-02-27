@@ -10,6 +10,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Client implements MessageReceiver {
+    /*
+    Även om linjerna blivit lite blurry i det här projektet skulle man kunna
+    kalla klienten för en kontroller. Den tar hand om data och skickar den 
+    mellan guin och modellen.
+    */
 
     private boolean haveSetName;
     private String name;
@@ -20,7 +25,7 @@ public class Client implements MessageReceiver {
     private ServerMultipart server;
     private String connectedIP;
     
-    private int sentFilePort;
+    private int sentFilePort;//oanvända ?
     private int sentFileSize;
     private String sentFileName;
     private String sentFilePath;
@@ -30,13 +35,18 @@ public class Client implements MessageReceiver {
     
 
     public Client(boolean admin) {
+        /*
+        konstruktor, inget spännande.
+        */
         haveSetName = false;
         isAdmin = admin;
         textColor = black;
     }
     
     public void setSendInfo(int port, int size, String fName, String fPath){
-        
+        /*
+        Oanvändt i vår implentation?
+        */
         sentFilePort = port;
         sentFileSize = size;
         sentFileName = fName;
@@ -53,6 +63,13 @@ public class Client implements MessageReceiver {
     }
     
     public void close(){
+        /*
+        Skickar ett disconnect medellanden till servern, och stänger sedan
+        connection efter att ha chillat ett ögonblick (varför? vi bör ha fel
+        hantering i servern)
+        
+        TODO ta bort debug skämt strängar
+        */
         System.out.println("WAKE ME UP");
         Message discM = new Message(textColor,name, "Im out lol",true);
         sendMessage(discM);
@@ -69,14 +86,23 @@ public class Client implements MessageReceiver {
     }
     
     public void setServer(ServerMultipart aServer){
+        /*
+        Den som är admin måste kunna hålla koll på sin server för o calla 
+        olika kommandon, och för att skicka saker mellan client o server
+        */
         server = aServer;
     }
+    
     public ServerMultipart getServer(){
         return server;
     }
     
     public boolean checkIP(String ip){
-        
+        /*
+        Kollar om en ip finns med bland de uppkopplade till servern
+        Tror den bara användes i debugsyfte under konstruktionen av programmet
+        men jag kan ha fel på det.
+        */
         ArrayList<String> repList = server.getIPs();
         
        // System.out.println("replist size: " +repList.size());
@@ -93,6 +119,10 @@ public class Client implements MessageReceiver {
         
     }
     public void getConnection(String host, int port) {
+        /*
+        Öppnar nytt chattfönster och försöker ansluta till en server, baserat
+        på indata. Skickar hardcodeat connect request medellande.
+        */
         if (haveSetName) {
             window = new ChatWindow(this);
             try {
@@ -122,6 +152,9 @@ public class Client implements MessageReceiver {
     }
 
     public String getConnectedIP(){
+        /*
+        hämtar server ip
+        */
         return connectedIP;
     }
     
@@ -135,6 +168,9 @@ public class Client implements MessageReceiver {
     }
     
     public void sendFileRequest(Message message,String IP){
+        /*
+        Olika sub-metoder för om användaren är admin eller ej
+        */
         waitingForFile = true;
         if(this.isAdmin){
             sendServerFileRequest(message, IP);
@@ -146,19 +182,33 @@ public class Client implements MessageReceiver {
     }
     
     private void sendServerFileRequest(Message message,String IP){
+        /*
+        Är man admin så använder man serverns metod för o passa pm till 
+        mottagare
+        */
             server.sendFileRequest(message, IP);
     }
     private void sendClientFileRequest(Message message,String IP){
+        /*
+        är man inte admin så skickar man till servern helt enkelt.
+        */
             this.sendMessage(message);
         
     }
 
     public void sendMessage(Message message) {
+        /*
+        Passar upp medellandet genom the chain of abstraction så den till slut
+        läggs på strömmen
+        */
         System.out.println("Client: putStringOnStream");
         myRepresentation.sendString(message);
     }
 
     public void receiveFR(Message message, String ip){
+        /*
+        Specialare för ifall man får en filerequest, så det öppnas fönster.
+        */
         
             if(message.isFileRequest()){
             System.out.println("ay wtf");
@@ -170,11 +220,19 @@ public class Client implements MessageReceiver {
         
         
     }
+    
     public void receive(Message message, ClientRep sender) {
-        /*System.out.println("receive - my name is "+name+" and I just read: "+
-                message.getText()+"\n and it's from: " +
-                message.getSenderName());*/
+        /*
+        Kollar vad som skall göras med ett mottaget message. Troligen trycks de
+        in i chattfönster
+        */
+
         if(message.isFileRequest()){
+            /*
+            Används de här när vi har special metoden? 
+            
+            TODO kolla om detta används
+            */
             System.out.println("ay wtf");
             window.createReceiveWindow(message.getFileRequest().getFileName(),
                     message.getSenderName(),
@@ -183,6 +241,12 @@ public class Client implements MessageReceiver {
         }
         if(message.isFileResponse()&&
                 waitingForFile){
+            /*
+            väntar man på en filrespons så öppnar man en filesender o skickar 
+            över filen
+            
+            TODO fixa timeout för filesend
+            */
             waitingForFile = false;
             try {
                 FileSender sendo = new FileSender(
@@ -194,7 +258,7 @@ public class Client implements MessageReceiver {
             
         }
         else{
-            window.handleMessage(message);
+            window.handleMessage(message); // printa i chattfönster
             System.out.flush();
         }
     }

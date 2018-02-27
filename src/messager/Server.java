@@ -6,6 +6,12 @@ import java.util.ArrayList;
 import java.util.stream.Stream;
 
 public abstract class Server implements MessageReceiver {
+    /*
+    En klass som håller koll på massa client reps som håller koll på massa
+    comms som kommunicerar med andra comms.
+    
+    TODO SVEN kommentera
+    */
 
     private ServerSocket server;
     private ArrayList<ClientRep> myClients = new ArrayList<>();

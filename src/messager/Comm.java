@@ -8,6 +8,13 @@ import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Comm implements Runnable {
+    
+    /*
+    Basically socketen o strömmen o allt här
+    
+    TODO SVEN kommentera
+    */
+    
     private MessageReceiver receiver;
     private Socket myConnection;
     private PrintWriter output;
@@ -36,7 +43,8 @@ public class Comm implements Runnable {
     private void setUpStreams() {
         try {
             output = new PrintWriter(this.myConnection.getOutputStream());
-            input = new BufferedReader(new InputStreamReader(this.myConnection.getInputStream()));
+            input = new BufferedReader(
+                    new InputStreamReader(this.myConnection.getInputStream()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,6 +54,9 @@ public class Comm implements Runnable {
     public void run() {
 
         while (getRunning()) {
+            /*
+            Sitter o lyssnar på strömmen efter medellanden
+            */
             try {          
                 System.out.println("1 ");
                 System.out.flush();
@@ -60,6 +71,9 @@ public class Comm implements Runnable {
                 receiveMessage(message);
                 System.out.flush();
             } catch(SocketException e){
+                /*
+                Har o göra med disconnecten för o undvika trådlås typ ?
+                */
                 System.out.println("just as planned");
             }
             catch (Exception e) {
@@ -80,6 +94,10 @@ public class Comm implements Runnable {
     }
 
     public void putStringOnStream(String message) {
+        /*
+        Skriver en medellande sträng på output strömmen  så servern får tag i
+        den
+        */
         output.println(message);
         output.flush();
         System.out.println("test comm - sent " + message);
@@ -92,12 +110,18 @@ public class Comm implements Runnable {
 
     
     public boolean getRunning(){
-        
+        /*
+        Kollar om den lyssnar
+        */
         return running.get();
     }
     public void close() {
         System.out.println("You closed your socket");
         try {
+            /*
+            Stänger connectionen på ett sätt så vi ej får trådlås
+            todo ta bort all debug skiten
+            */
             running.set(false); 
             System.out.println("1");
 //            runThread.interrupt();

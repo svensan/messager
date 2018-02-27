@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+Stor fil som hanterar chatt fönstret, och underfönster som är relaterade till
+det.
  */
 package messager;
 
@@ -27,13 +26,16 @@ import javax.swing.text.StyledDocument;
  * @author maxoliveberg
  */
 public class ChatWindow {
+    /*
+    Mest swing komponenter
+    */
     JFrame mainFrame; // mainpanel sitter på mainframe
     JPanel mainPanel; // ALLT sitter på mainpanel
     
     JPanel buttonPanel; 
     
     JTextPane chatWindow;
-    JScrollPane chatScrollWindow;
+    JScrollPane chatScrollWindow; // text wrappat i scrollwindow.
     
     JButton closeButton;
     JButton sendFileButton;
@@ -46,14 +48,25 @@ public class ChatWindow {
     
     ChatWindow(Client creator){
         
+        /*
+        Client creator skickas in så man kan hålla koll på ägaren o skicka saker
+        mellan dem osv osv. Mest massa swing komponenter, men actionlisteners
+        definieras i knapparna.
+        
+        gridbag för att organisera
+        */
+        
         user = creator;
-       // ReceiveWindow meme = new ReceiveWindow("jewlord",6969);
+
         mainFrame = new JFrame();
         mainPanel = new JPanel(new GridBagLayout());
         
         closeButton = new JButton("Close");
         closeButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) {
+                /*
+                disconnectar från servern, och dödar sen fönstret.
+                */
                 user.close();
                 mainFrame.dispose();
                 
@@ -63,6 +76,10 @@ public class ChatWindow {
         sendFileButton.addActionListener(new ActionListener() { 
                     public void actionPerformed(ActionEvent e) 
                          {
+                             /*
+                             Öppnar ett nytt filskickar window.
+                             Om användaren är serverowner som indata.
+                             */
                              SendWindow sWindow = new SendWindow(
                                      user.isAdmin());}});
         
@@ -70,6 +87,9 @@ public class ChatWindow {
         colorButton.addActionListener(new ActionListener() { 
                     public void actionPerformed(ActionEvent e) 
                          {
+                             /*
+                             Öppnar nytt färgfönster.
+                             */
                              ColorWindow sWindow = new ColorWindow(user);
                          }});
         
@@ -98,6 +118,13 @@ public class ChatWindow {
         textField.addActionListener(new ActionListener() { 
                     public void actionPerformed(ActionEvent e) 
                          {
+                             /*
+                             Tar datan från textfield och från klienten som
+                             textwindow vet om och trycker in det i en message
+                             som sedan skickas via client klassen. Man hade 
+                             kunnat migrera det här till klienten om man känner 
+                             för det.
+                             */
                          String messageText = textField.getText();
                          Color color = user.getColor();
                          String name = user.getName();
@@ -107,7 +134,7 @@ public class ChatWindow {
                          
                          user.sendMessage(message);
                          
-                         textField.setText("");
+                         textField.setText(""); // nollställ chatten
                          }});
         
         GridBagConstraints textC = new GridBagConstraints();
@@ -126,6 +153,11 @@ public class ChatWindow {
     
     public void handleMessage(Message argM){
         
+        /*
+        Plockar ut det viktiga ur ett message, skapar en sträng o trycker in
+        det i textfönstret. Tror att lite av koden ursprungligen är  copy 
+        pastead från stackoverflow, behövde kolla upp hur man färgade strängen.
+        */
         String user = argM.getSenderName();
         String message = argM.getText();
         Color color = argM.getColor();
@@ -145,6 +177,14 @@ public class ChatWindow {
 
     
         class SendWindow{
+            
+            /*
+            Det här fönsret är för att skicka filer. Mest swing komponenter.
+            
+            actionlistener i knapparna
+            
+            indata om user är admin, påverkar hurvida man välja recipient.
+            */
             
             JFrame sMainFrame;
             JPanel sMainPanel;
@@ -168,10 +208,18 @@ public class ChatWindow {
                 sMainPanel = new JPanel();
                 sMainPanel.setLayout(new GridLayout(5,1));
                 if(isHost == true){
+                    /*
+                    Om man är en host ska man kunna välja vem man ska skicka
+                    till
+                    */
                     recipientField = new JTextField("Recipient...",15);
                     sMainPanel.add(recipientField);
                 }else{
+                    /*
+                    är man ej admin får man skicka till servern, helt enkelt.
+                    */
                     recipient = user.getConnectedIP();
+                    
                 }
                 
                 pathField = new JTextField("");
@@ -179,10 +227,16 @@ public class ChatWindow {
                 
                 browseButton = new JButton("Browse for file...");
                 browseButton.addActionListener(new ActionListener(){
+                    /*
+                    Browsebutton tar upp en ny fileChooser och sätter fildata
+                    till ens selection. Något kan vara stackoverflow men de är
+                    ju väldigt grundläggande kod ändå.
+                    */
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         JFileChooser fileChooser = new JFileChooser();
-                        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+                        fileChooser.setCurrentDirectory(
+                                new File(System.getProperty("user.home")));
                         int result = fileChooser.showOpenDialog(mainFrame);
                         if (result == JFileChooser.APPROVE_OPTION) {
                             File selectedFile = fileChooser.getSelectedFile();
@@ -198,9 +252,6 @@ public class ChatWindow {
                 sMainPanel.add(pathField);
                 sMainPanel.add(browseButton);
                 
-              //  portField = new JTextField("Port...",18);
-                //sMainPanel.add(portField);
-                
                 messageField = new JTextField("Message...");
                 sMainPanel.add(messageField);
                 
@@ -208,15 +259,13 @@ public class ChatWindow {
                 sSendButton.addActionListener(new ActionListener() { 
                     public void actionPerformed(ActionEvent e) 
                          
-                    {
-                        //boolean meme =  user.checkIP(recipientField.getText());
-                        //System.out.println(meme + " at ip " 
-                         //       + recipientField.getText());
+                    {   
+                        /*
+                        Tar datan på filen och vem den skall till, och skapar 
+                        en filerequest baserat på de.
                         
-                       /* user.setSendInfo(Integer.parseInt(portField.getText()),
-                                (int)fileSize,
-                                fileName, filePath);*/
-                        
+                        TODO FELHANTERING ??
+                        */
                         FileRequest requesto = new FileRequest(fileName,
                                 (int)fileSize);
                         
@@ -226,9 +275,7 @@ public class ChatWindow {
                         if(recipient== null){
                         recipient = recipientField.getText();
                         }
-                        
                         user.sendFileRequest(fileReqMsg, recipient);
-                        
                          
                          }});
                 
@@ -238,7 +285,9 @@ public class ChatWindow {
                 sCloseButton.addActionListener(new ActionListener() { 
                     public void actionPerformed(ActionEvent e) 
                         {
-                        
+                        /*
+                            Dödar fönsret
+                            */
                         
                         sMainFrame.dispose();
                              
@@ -259,10 +308,22 @@ public class ChatWindow {
         
         public void createReceiveWindow(String name,String sendName, long size,
                 String argIP){
+            /*
+            den här metoden används när man får en filrequest.
+            */
             ReceiveWindow windo = new ReceiveWindow(name,sendName,size,argIP);
+            
         }
         
         class ReceiveWindow{
+            
+            /*
+            Fönsret som kommer fram när man får en filerequest. Massa swing
+            komponenter
+            
+            actionlisteners i knapparna
+            
+            */
             
             JFrame rMainFrame;
             JPanel rMainPanel;
@@ -277,7 +338,9 @@ public class ChatWindow {
             String filePath;
             public ReceiveWindow(String name,String sendName, long size,
                     String argIP){
-                
+                /*
+                Visar fildata så får man svara
+                */
                 infoField = new JTextField("File name: " + name + " Size: " 
                                             +size+". Sent by:" + sendName);
                 infoField.setEditable(false);
@@ -290,6 +353,12 @@ public class ChatWindow {
                 yesButton.addActionListener(new ActionListener(){
                     
                 public void actionPerformed(ActionEvent e) {
+                    /*
+                    Skickar ur ett yes response och öppnar en filereceiver
+                    i väntan på filen
+                    
+                    TODO timeout timer ???
+                    */
                    FileResponse respondo = new FileResponse(true,
                            Integer.parseInt(rPortField.getText()));
                    Message texado = new Message(user.getColor(),
@@ -318,6 +387,9 @@ public class ChatWindow {
                 noButton.addActionListener(new ActionListener(){
                     
                 public void actionPerformed(ActionEvent e) {
+                    /*
+                    tackar nej till filen
+                    */
                            FileResponse respondo = new FileResponse(false,
                            Integer.parseInt(rPortField.getText()));
                            
@@ -353,6 +425,12 @@ public class ChatWindow {
         
         class ColorWindow{
             
+            /*
+            Fönsret man får välja färg i, i form av hexcode. mest swing.
+            
+            actionlistneers i knapparna
+            */
+            
             Client cUser;
             JFrame cMainFrame;
             JPanel cMainPanel;
@@ -369,6 +447,11 @@ public class ChatWindow {
                 confirmButton.addActionListener(new ActionListener() { 
                     public void actionPerformed(ActionEvent e) 
                          {
+                             /*
+                             Sätter färgen till de man sagt
+                             
+                             TODO felhantering
+                             */
                              Color newColor = 
                                      createColorFromHex(hexField.getText());
                              
@@ -393,6 +476,9 @@ public class ChatWindow {
             }
             
             private Color createColorFromHex(String hexColor) {
+                /*
+                funktion för att översätta hex till color
+                */
                 int r, g, b;
                 r = Integer.valueOf(hexColor.substring(1, 3), 16);
                 g = Integer.valueOf(hexColor.substring(3, 5), 16);
@@ -402,14 +488,29 @@ public class ChatWindow {
         }
         }
         
+        public void createConnectionWindow(Message message, ClientRep sender){
+            ConnectionWindow connecto = new ConnectionWindow(message, sender);
+        }
+        
+        public void createConnectionWindow(ClientRep sender){
+            ConnectionWindow connecto = new ConnectionWindow(sender);
+        }
+        
         public class ConnectionWindow{
             
+            /*
+            Poppar upp när nån skickar en connection request
+            */
             JFrame connectMainFrame;
             JPanel panelo;
             JButton yesB;
             JButton noB;
             
             public ConnectionWindow(ClientRep sender){
+                /*
+                konstruktor om personen ej skickar en request som sitt första
+                message = klient som ej stödjer multichat
+                */
                 this(new Message(BLACK,"UNKNOWN",
                         "User may be trying to connect with a shitty client")
                         ,sender);
@@ -417,6 +518,9 @@ public class ChatWindow {
                 
             }
             public ConnectionWindow(Message message,ClientRep sender){
+                /*
+                vanliga konstruktorn för en klient som supportar multichat
+                */
                 
                 connectMainFrame = new JFrame();
                 JTextField text = new JTextField("User "+ 
@@ -427,6 +531,11 @@ public class ChatWindow {
                 yesB = new JButton("Accept request");
                 yesB.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e) {
+                    /*
+                    Accepterar man så sätts personens clientrep i whitelist 
+                    basically. Den får nu medellanden och de dem skickar visas
+                    för alla. Se server klass osv för mer info
+                    */
                     sender.acceptConnection();
                     Message accepto = new Message(BLACK,"Server","User "
                             + message.getSenderName()+" accepted.");
@@ -438,6 +547,10 @@ public class ChatWindow {
                 noB = new JButton("Deny Request");
                 
                 noB.addActionListener(new ActionListener(){
+                    /*
+                    Får personen inte vara med får denne veta detta, sen kopplar
+                    man ner anslutningen mot denna
+                    */
                     public void actionPerformed(ActionEvent e) {
                         Message accepto = new Message(BLACK,"Server","User "
                                 + message.getSenderName()+" denied.");
@@ -459,13 +572,11 @@ public class ChatWindow {
             
         }
         
-        public void createConnectionWindow(Message message, ClientRep sender){
-            ConnectionWindow connecto = new ConnectionWindow(message, sender);
-        }
-        public void createConnectionWindow(ClientRep sender){
-            ConnectionWindow connecto = new ConnectionWindow(sender);
-        }
-        
+        /*
+        Metoder för o skapa connection windows, för dåliga klienter och multi
+        chat klienter. 
+        */
+
         
     }
 

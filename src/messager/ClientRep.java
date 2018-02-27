@@ -15,6 +15,13 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 
 public class ClientRep {
+    /*
+    Kommunicerar mellan uppkopplingen och clienten och servern och skit
+    Parsar strängar från comm ?
+    
+    TODO SVEN KOLLA ÖVER DE HÄR
+    
+    */
 
     private Encryptor encryption;
     private MessageConverter messageConverter;
@@ -28,7 +35,8 @@ public class ClientRep {
     String connectionAdress;
     boolean acceptedConnection = false;
 
-    public ClientRep(Socket connection, MessageReceiver messager) throws Exception {
+    public ClientRep(Socket connection, MessageReceiver messager) 
+            throws Exception {
         this.connection = new Comm(connection, this);
         this.connectionAdress = connection.getInetAddress().getHostAddress();
         this.connection.registerMessager(messager);
@@ -47,6 +55,10 @@ public class ClientRep {
     }
 
     public boolean firstMessage(){
+        /*
+        returnerar om en client rep har skickat ett medellande tidigare.
+        relevant för server.
+        */
         return firstMessage;
     }
     
@@ -64,11 +76,17 @@ public class ClientRep {
     }
 
     public void sendString(Message message) {
+        /*
+        Konverterar till en sträng o sätter ett medellande på strömmen
+        */
         String outPutString = handleOutputMessage(message);
         connection.putStringOnStream(outPutString);
     }
 
     public void closeConnection() {
+        /*
+        SHUT IT DOWN
+        */
         System.out.println("got so far to lose it all");
         connection.close();
     }
@@ -86,18 +104,30 @@ public class ClientRep {
     }
 
     private String handleOutputMessage(Message message) {
+        /*
+        Verkar passa de här till message converter vilket är baserat
+        på abstrakta convertern tror jag ?
+        SVEN kan de här TODO FIXA KOMMENTAR
+        */
         return messageConverter.convertMessage(message);
     }
 
     public Message handleInputMessage(String messageString) throws Exception {
+        /*
+        Parsear ett inkommet string och gör om de till ett message helt enkelt
+        TODO SVEN TA EN TITT O KOMMENTERA
+        */
         MyParceHandler myHandler = new MyParceHandler();
-        InputStream stream = new ByteArrayInputStream(messageString.getBytes(StandardCharsets.UTF_8.name()));
+        InputStream stream = 
+                new ByteArrayInputStream(
+                        messageString.getBytes(StandardCharsets.UTF_8.name()));
 
         try {
             this.useParser(stream, myHandler);
         } catch (Exception e) {
             System.out.println("OOOOps");
-            return new Message(Color.RED, "ERROR", "Sender: "+this.getIP()+" sen broken XML.");
+            return new Message(Color.RED, "ERROR",
+                    "Sender: "+this.getIP()+" sen broken XML.");
         }
 
         return myHandler.getMessage();
@@ -153,32 +183,39 @@ public class ClientRep {
         private boolean messageIsDisconnect = false;
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) {
+        public void startElement(String uri, String localName, 
+                String qName, Attributes attributes) {
 
             this.handleStartTag(qName, attributes);
 
         }
 
         @Override
-        public void endElement(String uri, String localName, String qName) throws SAXException {
+        public void endElement(String uri, String localName,
+                String qName) throws SAXException {
             
             
         }
 
         @Override
-        public void characters(char ch[], int start, int length) throws SAXException {
+        public void characters(
+                char ch[], int start, int length) throws SAXException {
             if (isEncrypted) {
                 try {
                     isEncrypted = false;
                     String encryptedMessageHex = new String(ch, start, length);
 
-                    byte[] encryptedBytes = DatatypeConverter.parseHexBinary(encryptedMessageHex);
+                    byte[] encryptedBytes =
+                            DatatypeConverter.parseHexBinary(
+                                    encryptedMessageHex);
 
                     Encryptor encryptor = encryptionFactory.getEncryptor(type);
-                    byte[] decryptedBytes = encryptor.decrypt(key, encryptedBytes);
+                    byte[] decryptedBytes =
+                            encryptor.decrypt(key, encryptedBytes);
 
                     SAXParser newParser = ClientRep.this.getParser();
-                    InputStream stream = new ByteArrayInputStream(decryptedBytes);
+                    InputStream stream = 
+                            new ByteArrayInputStream(decryptedBytes);
 
                     newParser.parse(stream, this);
                 } catch (Exception e) {
@@ -195,7 +232,8 @@ public class ClientRep {
                 ret.setConnectRequest();
                 return ret;
             } else if (messageIsDisconnect) {
-                return new Message(color, messageSender, text, messageIsDisconnect);
+                return new Message(
+                        color, messageSender, text, messageIsDisconnect);
             }
             if (messageContainsFileRequest) {
                 return new Message(messageSender, text, fileRequest);
@@ -261,7 +299,8 @@ public class ClientRep {
         }
 
         private void handleFileResponseTag(Attributes attributes) {
-            boolean acceptedFileRequest = attributes.getValue("reply").equalsIgnoreCase("yes");
+            boolean acceptedFileRequest = 
+                    attributes.getValue("reply").equalsIgnoreCase("yes");
 
             int port = Integer.valueOf(attributes.getValue("port"));
 
