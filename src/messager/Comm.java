@@ -58,13 +58,13 @@ public class Comm implements Runnable {
             Sitter o lyssnar på strömmen efter medellanden
             */
             try {          
-                System.out.println("1 ");
+                //System.out.println("1 ");
                 System.out.flush();
                 String stringMessage = input.readLine();
                 if (stringMessage == null) {
                     throw new RuntimeException("Peer dead");
                 }
-                System.out.println("2 " + stringMessage);
+                //System.out.println("2 " + stringMessage);
                 System.out.flush();
                 sleep(10);
                 Message message = myOwner.handleInputMessage(stringMessage);
@@ -100,7 +100,7 @@ public class Comm implements Runnable {
         */
         output.println(message);
         output.flush();
-        System.out.println("test comm - sent " + message);
+       // System.out.println("test comm - sent " + message);
         System.out.flush();
     }
 
@@ -123,17 +123,18 @@ public class Comm implements Runnable {
             todo ta bort all debug skiten
             */
             running.set(false); 
-            System.out.println("1");
+           // System.out.println("1");
 //            runThread.interrupt();
-            System.out.println("2");
+         //   System.out.println("2");
 
             myConnection.close();
-            System.out.println("5");
+          //  System.out.println("5");
             try{
             input.close();
-            System.out.println("3");
+           // System.out.println("3");
             output.close();
-            System.out.println("4");}catch(SocketException e){
+          //  System.out.println("4");
+            }catch(SocketException e){
                 System.out.println("fackit");
                 
             }

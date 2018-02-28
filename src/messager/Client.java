@@ -68,9 +68,9 @@ public class Client implements MessageReceiver {
         connection efter att ha chillat ett ögonblick (varför? vi bör ha fel
         hantering i servern)
         
-        TODO ta bort debug skämt strängar
+        
         */
-        System.out.println("WAKE ME UP");
+        //System.out.println("WAKE ME UP");
         Message discM = new Message(textColor,name, "Im out lol",true);
         sendMessage(discM);
         try{

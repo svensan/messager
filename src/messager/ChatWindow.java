@@ -452,8 +452,13 @@ public class ChatWindow {
                              
                              TODO felhantering
                              */
-                             Color newColor = 
-                                     createColorFromHex(hexField.getText());
+                             Color newColor = BLACK;
+                             try{
+                             newColor = 
+                                     createColorFromHex(hexField.getText());}
+                             catch(Exception ex){
+                                 System.out.println("shitty hexcode");
+                             }
                              
                              cUser.setColor(newColor);
                              cMainFrame.dispose();

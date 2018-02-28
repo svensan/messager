@@ -126,11 +126,14 @@ public class MainMenu{
                 /*
                 Gör om input datan till information för connecten,
                 skapar sedan en ny klient och ansluter.
-                
-                TODO FELHANTERING
-                
                 */
-                int port = Integer.parseInt(portBar.getText());
+                int port;
+                try{
+                port = Integer.parseInt(portBar.getText());}
+                catch(Exception ex){
+                    System.out.println("could not parse port");
+                    return;
+                }
                 String name = cNameBar.getText();
                 String adress = adressBar.getText();
 
@@ -205,8 +208,18 @@ public class MainMenu{
                 TODO FELHANTERING
                 
                 */
-                int port = Integer.parseInt(adressBar.getText());
+                int port;
+                try{
+                port = Integer.parseInt(adressBar.getText());}
+                catch(Exception ex){
+                    System.out.println("could not parse port to"
+                            + "integer");
+                    return;
+                }
                 String name = nameBar.getText();
+                if(name.equals("") || name.equals("Please enter your name")){
+                    name = "yung abole";
+                }
                 ServerMultipart server = new ServerMultipart();
                 server.setPort(port);
                 server.startServer();

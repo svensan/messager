@@ -87,7 +87,7 @@ public class ClientRep {
         /*
         SHUT IT DOWN
         */
-        System.out.println("got so far to lose it all");
+        //System.out.println("got so far to lose it all");
         connection.close();
     }
 

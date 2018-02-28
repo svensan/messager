@@ -3,17 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/Comm.java</file>
-            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/FileReceiver.java</file>
-            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/FileSender.java</file>
             <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/ServerMultipart.java</file>
             <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/Message.java</file>
-            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/ClientRep.java</file>
-            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/Server.java</file>
-            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/ChatWindow.java</file>
-            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/FileSendTest.java</file>
-            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/Client.java</file>
-            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/Projekt_GUI.java</file>
         </group>
     </open-files>
 </project-private>

@@ -49,7 +49,7 @@ public class FileReceiver {
         TODO fixa timing
         */
         System.out.println("Pre sleep");
-        Thread.sleep(5000);
+        Thread.sleep(500);
         System.out.println("Post sleep");
         ReceiveFile();
         
