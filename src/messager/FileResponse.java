@@ -2,7 +2,8 @@ package messager;
 
 public class FileResponse {
     /*
-    ????
+    Denna klass är på många sätt likt FileRequest-klassen. Den största anledningen till att detta fick bli en egen klass
+    är att inte få så oerhört många fält i Message-klassen.
     */
 
     private int port;
