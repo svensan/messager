@@ -263,9 +263,20 @@ public class ChatWindow {
                         /*
                         Tar datan på filen och vem den skall till, och skapar 
                         en filerequest baserat på de.
-                        
-                        TODO FELHANTERING ??
+
                         */
+                        File theFile;
+                        try{
+                            /*
+                            bör hindra file fuckery om de ens är möjligt
+                            med filechoosern
+                            */
+                            theFile = new File(filePath);
+                        }catch(Exception ex){
+                            System.out.println("problem with filepath"
+                                    + " im aborting this shit");
+                            return;
+                        }
                         FileRequest requesto = new FileRequest(fileName,
                                 (int)fileSize);
                         
@@ -396,7 +407,8 @@ public class ChatWindow {
                            Message texado = new Message(user.getColor(),
                            user.getName(),responseField.getText());
                            
-                           Message messado = new Message(user.getName(),"",respondo);
+                           Message messado = new Message(
+                                   user.getName(),"",respondo);
                    
                     user.sendMessage(texado);
                     user.sendMessage(messado);

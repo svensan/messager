@@ -10,8 +10,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Comm implements Runnable {
     
     /*
-    A class that wraps the socket to simplify sending and receiving messages. This class is dynamic in the sense that it
-    contains a interface which chooses how one receives messages (receiver) so that the class that want to use Comm
+    A class that wraps the socket to simplify sending and receiving messages.
+    This class is dynamic in the sense that it
+    contains a interface which chooses how one receives messages (receiver) 
+    so that the class that want to use Comm
     can decide how messages are received.
     
     TODO SVEN kommentera
@@ -26,8 +28,10 @@ public class Comm implements Runnable {
 
     public Comm(Socket connection, ClientRep myOwner) {
         /*
-        Denna konstruktor är högst relevant eftersom att det är här vi trådar av separata användare. Alltså när en ny
-        klient joinar servern så skapar vi en ClientRep åt dom, och det är här vi ger den ClientRep-instansen en egen
+        Denna konstruktor är högst relevant eftersom att det är här vi trådar
+        av separata användare. Alltså när en ny
+        klient joinar servern så skapar vi en ClientRep åt dom, och det är här
+        vi ger den ClientRep-instansen en egen
         tråd.
          */
 
@@ -50,7 +54,8 @@ public class Comm implements Runnable {
 
     private void setUpStreams() {
         /*
-        Sets up the output and input stream. To simplify message sending we use a BufferedReader on the inputstream
+        Sets up the output and input stream. To simplify message sending we
+        use a BufferedReader on the inputstream
         and a printwriter on the output stream.
          */
         try {
@@ -67,8 +72,10 @@ public class Comm implements Runnable {
 
         while (getRunning()) {
             /*
-            Sitter o lyssnar på strömmen efter medellanden. After a message is received the instance calls it's owner to
-            handle the inputstring, sending the message up in the class hierarchy.
+            Sitter o lyssnar på strömmen efter medellanden. After a message is
+            received the instance calls it's owner to
+            handle the inputstring, sending the message up in the class
+            hierarchy.
             */
             try {          
                 //System.out.println("1 ");
@@ -125,7 +132,8 @@ public class Comm implements Runnable {
 
     public void registerMessager(MessageReceiver messager) {
         /*
-        The receiver is needed to handle a incomming message, here we register the receive method. That is, we register
+        The receiver is needed to handle a incomming message, 
+        here we register the receive method. That is, we register
         what the Comm should do when it receives a message.
          */
         this.receiver = messager;

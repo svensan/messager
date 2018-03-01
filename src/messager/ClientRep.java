@@ -17,9 +17,12 @@ import java.nio.charset.StandardCharsets;
 public class ClientRep {
     /*
 
-    En klass som kan representera en klient. Den kan läsa XML och konvertera XML till medelande-klassen. Den kan också
-    konvertera ett medelande till XML. Det är denna klass som innehåller en Comm, alltså har denna klass kontakt med
-    input och output strömmen på socketen, all information som ska skickas från/till servern måste gå genom en instans
+    En klass som kan representera en klient. Den kan läsa XML och konvertera
+    XML till medelande-klassen. Den kan också
+    konvertera ett medelande till XML. Det är denna klass som innehåller en
+    Comm, alltså har denna klass kontakt med
+    input och output strömmen på socketen, all information som ska skickas
+    från/till servern måste gå genom en instans
     av denna klass.
     
     TODO SVEN KOLLA ÖVER DE HÄR
@@ -104,17 +107,22 @@ public class ClientRep {
 
     public void registerMessageConverter(MessageConverter messageConverter) {
         /*
-        Registrerar hur vi ska konvertera medelanden från medelande-klassen till strängar. I defaultfallet så gör vi
-         detta genom att endast översätta till XML, men i fallet med kryptering så måste också medelandet krypteras.
+        Registrerar hur vi ska konvertera medelanden från medelande-klassen 
+        till strängar. I defaultfallet så gör vi
+         detta genom att endast översätta till XML, men i fallet med kryptering 
+        så måste också medelandet krypteras.
          */
         this.messageConverter = messageConverter;
     }
 
     private String handleOutputMessage(Message message) {
         /*
-        Konverterar ett medelande från medelande-klassen till en sträng. För att göra detta så använder vi en
-        konverterare. En kan läsa mer om konverterare i den klassen (messageConverter), men i stort så är det en klass
-        som konverterar medelande från medelande-klassen till XML, detta görs på olika sätt beroende av vilken
+        Konverterar ett medelande från medelande-klassen till en sträng. 
+        För att göra detta så använder vi en
+        konverterare. En kan läsa mer om konverterare i den klassen 
+        (messageConverter), men i stort så är det en klass
+        som konverterar medelande från medelande-klassen till XML, 
+        detta görs på olika sätt beroende av vilken
         kryptering som används.
         */
         return messageConverter.convertMessage(message);
@@ -122,10 +130,14 @@ public class ClientRep {
 
     public Message handleInputMessage(String messageString) throws Exception {
         /*
-        Parsear ett inkommet string och gör om de till ett message helt enkelt. För att kunna göra detta så måste vi
-        använda en parser, vi använder parsern SAXParser denna kan läsas mer om i dennes dokumentation. För att använda
-        en SAXParser så måste vi ha en Handler åt parsern, denna handler är en inre klass och en kan läsa mer om den
-        nedan. Parsern parsar heller inte strängar direkt, så vi måst konvertera från sträng till en InputStream.
+        Parsear ett inkommet string och gör om de till ett message helt enkelt.
+        För att kunna göra detta så måste vi
+        använda en parser, vi använder parsern SAXParser denna kan läsas mer om 
+        i dennes dokumentation. För att använda
+        en SAXParser så måste vi ha en Handler åt parsern, denna handler är en 
+        inre klass och en kan läsa mer om den
+        nedan. Parsern parsar heller inte strängar direkt, så vi måst konvertera
+        från sträng till en InputStream.
         */
         MyParceHandler myHandler = new MyParceHandler();
         InputStream stream = 
@@ -133,7 +145,8 @@ public class ClientRep {
                         messageString.getBytes(StandardCharsets.UTF_8.name()));
 
         try {
-            this.useParser(stream, myHandler); //För att använda parsern krävs en handler och en inputström.
+            this.useParser(stream, myHandler); /*För att använda parsern krävs
+            en handler och en inputström.*/
         } catch (Exception e) {
             System.out.println("OOOOps");
             return new Message(Color.RED, "ERROR",
@@ -177,8 +190,10 @@ public class ClientRep {
     private class MyParceHandler extends DefaultHandler {
 
         /*
-        Denna klass är en klass som vi måste ha för att kunna använda en SAXParser. Klassen har ett jobb, vilket är att
-        läsa igenom en sträng och spara den information som vi måste ha för att skapa ett medelande. Sedan har denna klass
+        Denna klass är en klass som vi måste ha för att kunna använda en
+        SAXParser. Klassen har ett jobb, vilket är att
+        läsa igenom en sträng och spara den information som vi måste ha för
+        att skapa ett medelande. Sedan har denna klass
         också en metod som kan hämta medelandet som vi parsat fram.
          */
 
@@ -202,8 +217,10 @@ public class ClientRep {
         public void startElement(String uri, String localName, 
                 String qName, Attributes attributes) {
             /*
-            Denna metod bestämmer vad vi ska göra när vi stöter på en starttag. Eftersom vi vill kunna hantera en mängd
-            olika taggar på olika unika sätt så har vi valt att splitta upp detta jobb i ett flertal mindre metoder.
+            Denna metod bestämmer vad vi ska göra när vi stöter på en starttag.
+            Eftersom vi vill kunna hantera en mängd
+            olika taggar på olika unika sätt så har vi valt att splitta upp 
+            detta jobb i ett flertal mindre metoder.
              */
 
             this.handleStartTag(qName, attributes);
@@ -214,7 +231,8 @@ public class ClientRep {
         public void endElement(String uri, String localName,
                 String qName) throws SAXException {
             /*
-            Denna klass bestämmer vad som ska hända när vi stöter på en sluttag. Notera att vi inte gör något, detta kommer
+            Denna klass bestämmer vad som ska hända när vi stöter på en sluttag.
+            Notera att vi inte gör något, detta kommer
             sig av att vi inte är intresserade av sluttaggar i denna chattapp.
              */
             
@@ -225,15 +243,19 @@ public class ClientRep {
                 char ch[], int start, int length) throws SAXException {
 
             /*
-            Denna klass bestämmer vad som ska hända med text emellan start och sluttag. Metoden fungerar egentligen på
-            två olika sätt beroende på om vi använder kryptering eller inte. Om kryptering används så dekrypteras medelandet
-            och vi parsar igenom den krypterade informationen. Om medelandet inte är krypterat så sparar vi bara texten.
+            Denna klass bestämmer vad som ska hända med text emellan start och 
+            sluttag. Metoden fungerar egentligen på
+            två olika sätt beroende på om vi använder kryptering eller inte. 
+            Om kryptering används så dekrypteras medelandet
+            och vi parsar igenom den krypterade informationen. Om medelandet
+            inte är krypterat så sparar vi bara texten.
              */
 
             if (isEncrypted) {
                 try {
                     /*
-                    Då kryptering används så hämtar vi nyckeln och dekrypterar och parsar sedan igenom den krypterade
+                    Då kryptering används så hämtar vi nyckeln och dekrypterar 
+                    och parsar sedan igenom den krypterade
                     informationen.
                      */
                     isEncrypted = false;
@@ -281,8 +303,10 @@ public class ClientRep {
 
         private void handleStartTag(String tagName, Attributes attributes) {
             /*
-            Denna metod känner igen alla taggar som vi kan hantera, och kan skicka en tag till rätt hanterare. Till
-            exempel om vi får en text-tagg så skickar vi det till text-taggs hanteraren.
+            Denna metod känner igen alla taggar som vi kan hantera, och kan
+            skicka en tag till rätt hanterare. Till
+            exempel om vi får en text-tagg så skickar vi det till text-taggs
+            hanteraren.
              */
 
             if (tagName.equalsIgnoreCase("message")) {
@@ -317,8 +341,10 @@ public class ClientRep {
 
         private void handleTextTag(Attributes attributes) {
             /*
-            Hanterar en texttagg genom att plocka det relevanta attributet och spara det. Eftersom att färgen skickas
-            som en Hex-kod så måste vi först konvertera Hex till den vanliga Color klassen.
+            Hanterar en texttagg genom att plocka det relevanta attributet och
+            spara det. Eftersom att färgen skickas
+            som en Hex-kod så måste vi först konvertera Hex till den vanliga
+            Color klassen.
              */
 
             color = createColorFromHex(attributes.getValue("color"));
@@ -346,8 +372,10 @@ public class ClientRep {
 
         private void handleFileRequestTag(Attributes attributes) {
             /*
-            Hanterar filerequest-taggar genom att konvertera informationen från attributen till en instans av
-            FileRequest-klassen. För mer information om FileRequest så läs under den klassen.
+            Hanterar filerequest-taggar genom att konvertera informationen
+            från attributen till en instans av
+            FileRequest-klassen. För mer information om FileRequest så läs
+            under den klassen.
              */
 
             String fileName = attributes.getValue("name");
@@ -359,8 +387,10 @@ public class ClientRep {
 
         private void handleFileResponseTag(Attributes attributes) {
             /*
-            Hanterar FileResponse-taggar gensom att spara informationen från attributen och ska en instans av
-            FileResponse-klassen. För mer information om FileResponse-klassen läs under den klassen.
+            Hanterar FileResponse-taggar gensom att spara informationen från
+            attributen och ska en instans av
+            FileResponse-klassen. För mer information om FileResponse-klassen
+            läs under den klassen.
              */
 
             boolean acceptedFileRequest = 
@@ -382,7 +412,8 @@ public class ClientRep {
 
         private Color createColorFromHex(String hexColor) {
             /*
-            Konverterar en färg från hex-kod till en färg representerad av Javas Color-klass.
+            Konverterar en färg från hex-kod till en färg representerad av
+            Javas Color-klass.
              */
 
             int r, g, b;

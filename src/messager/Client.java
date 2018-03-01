@@ -230,8 +230,10 @@ public class Client implements MessageReceiver {
         Kollar vad som skall göras med ett mottaget message. Troligen trycks de
         in i chattfönster
 
-        Denna klass tillåter Client-klassen att kontrollera hur medelanden ska tas emot. Detta kan göras då Comm-klassen
-        använder en receiver för att ta emot medelanden, vi kan alltså låta Comm använda denna receiver för att hantera
+        Denna klass tillåter Client-klassen att kontrollera hur medelanden ska
+        tas emot. Detta kan göras då Comm-klassen
+        använder en receiver för att ta emot medelanden, vi kan alltså låta 
+        Comm använda denna receiver för att hantera
         medelanden som vi vill.
         */
 
