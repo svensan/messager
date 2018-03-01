@@ -79,7 +79,7 @@ public abstract class Server implements MessageReceiver {
         try {
             Socket newClientCon = server.accept();
             ClientRep newClient = new ClientRep(newClientCon, this);
-            if (myClients.size() == 0) {
+            if(myClients.size()==0){
                 newClient.setHost(true);
                 newClient.acceptConnection();
             }
@@ -107,22 +107,18 @@ public abstract class Server implements MessageReceiver {
         receiver.sendString(message);
     }
 
-    public void sendMessage(Message message, ClientRep receiver, String ip) {
-        receiver.sendString(message);
-    }
-
-    public void setOwner(Client own) {
-
+    public void setOwner(Client own){ 
+        
         owner = own;
-
-        System.out.println("owner set to " + owner.getName());
+        
+        System.out.println("owner set to "+owner.getName());
     }
-
-    public Client getOwner() {
+    
+    public Client getOwner(){
         System.out.println("Owner is " + owner.getName());
         return owner;
     }
-
+    
     public void closeEverything() {
         /*
         Försöker stänga ner servern på ett kontrollerat sätt. Vi börjar med att stänga ner alla klienters sockets. Sedan
@@ -144,11 +140,11 @@ public abstract class Server implements MessageReceiver {
         }
     }
 
-    public ArrayList<String> getIPs() {
-
+    public ArrayList<String> getIPs(){
+        
         ArrayList<String> retList = new ArrayList();
-
-        for (int i = 0; i < myClients.size(); i++) {
+ 
+        for(int i =0;i<myClients.size();i++){
             //System.out.println(myClients.get(i).getIP());
             retList.add(myClients.get(i).getIP());
         }
@@ -164,26 +160,26 @@ public abstract class Server implements MessageReceiver {
         return myClients.stream();
     }
 
-    public ClientRep getOwnerRep() {
+    public ClientRep getOwnerRep(){
         ClientRep ret = null;
-        for (int i = 0; i < myClients.size(); i++) {
-            if (myClients.get(i).isHost()) {
+        for(int i = 0;i<myClients.size();i++){
+            if(myClients.get(i).isHost()){
                 ret = myClients.get(i);
             }
-
+        
         }
-        return ret;
+    return ret;
     }
-
-    public void removeRep(ClientRep rep) {
+    
+    public void removeRep(ClientRep rep){
 
         /*
         Tar bort en klient från servern.
          */
-
+        
         myClients.remove(rep);
-
+        
     }
-
+    
     public abstract void receive(Message message, ClientRep sender);
 }
