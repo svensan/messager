@@ -1,7 +1,9 @@
 package messager;
 
 import java.awt.Color;
+
 import static java.awt.Color.*;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -24,15 +26,14 @@ public class Client implements MessageReceiver {
     Color textColor;
     private ServerMultipart server;
     private String connectedIP;
-    
+
     private int sentFilePort;//oanvända ?
     private int sentFileSize;
     private String sentFileName;
     private String sentFilePath;
-    
+
     private boolean waitingForFile;
-    
-    
+
 
     public Client(boolean admin) {
         /*
@@ -42,8 +43,8 @@ public class Client implements MessageReceiver {
         isAdmin = admin;
         textColor = black;
     }
-    
-    public void setSendInfo(int port, int size, String fName, String fPath){
+
+    public void setSendInfo(int port, int size, String fName, String fPath) {
         /*
         Oanvändt i vår implentation?
         */
@@ -53,16 +54,16 @@ public class Client implements MessageReceiver {
         sentFilePath = fPath;
     }
 
-    public boolean isAdmin(){
+    public boolean isAdmin() {
         return isAdmin;
     }
-    
-    public Color getColor(){
+
+    public Color getColor() {
         return textColor;
-        
+
     }
-    
-    public void close(){
+
+    public void close() {
         /*
         Skickar ett disconnect medellanden till servern, och stänger sedan
         connection efter att ha chillat ett ögonblick (varför? vi bör ha fel
@@ -71,53 +72,55 @@ public class Client implements MessageReceiver {
         
         */
         //System.out.println("WAKE ME UP");
-        Message discM = new Message(textColor,name, "Im out lol",true);
+        Message discM = new Message(textColor, name, "Im out lol", true);
         sendMessage(discM);
-        try{
-        Thread.sleep(5);}
-        catch(InterruptedException e){
+        try {
+            Thread.sleep(5);
+        } catch (InterruptedException e) {
         }
-        
+
         myRepresentation.closeConnection();
     }
-    public void setColor(Color aC){
-        
+
+    public void setColor(Color aC) {
+
         textColor = aC;
     }
-    
-    public void setServer(ServerMultipart aServer){
+
+    public void setServer(ServerMultipart aServer) {
         /*
         Den som är admin måste kunna hålla koll på sin server för o calla 
         olika kommandon, och för att skicka saker mellan client o server
         */
         server = aServer;
     }
-    
-    public ServerMultipart getServer(){
+
+    public ServerMultipart getServer() {
         return server;
     }
-    
-    public boolean checkIP(String ip){
+
+    public boolean checkIP(String ip) {
         /*
         Kollar om en ip finns med bland de uppkopplade till servern
         Tror den bara användes i debugsyfte under konstruktionen av programmet
         men jag kan ha fel på det.
         */
         ArrayList<String> repList = server.getIPs();
-        
-       // System.out.println("replist size: " +repList.size());
-        for(int i = 0; i < repList.size();i++){
+
+        // System.out.println("replist size: " +repList.size());
+        for (int i = 0; i < repList.size(); i++) {
             //System.out.println("replist size: " +repList.size());
-           // System.out.println(repList.get(i));
-            if(repList.get(i).equals(ip)){
-              //  System.out.println("ip found");
+            // System.out.println(repList.get(i));
+            if (repList.get(i).equals(ip)) {
+                //  System.out.println("ip found");
                 return true;
             }
         }
         System.out.println("ip not found");
         return false;
-        
+
     }
+
     public void getConnection(String host, int port) {
         /*
         Öppnar nytt chattfönster och försöker ansluta till en server, baserat
@@ -131,19 +134,22 @@ public class Client implements MessageReceiver {
                 connectedIP = host;
                 if (mySocket.isConnected()) {
                     myRepresentation = new ClientRep(mySocket, this);
-                    
-                    if(isAdmin){myRepresentation.setHost(true);}
+
+                    if (isAdmin) {
+                        myRepresentation.setHost(true);
+                    }
                     
                     /*Message connectMessage = new Message(red,this.getName(),
                             "Successfully connected to server!");
                     sendMessage(connectMessage);*/
 
 
-                    if(!this.isAdmin){
-                        Message request = new Message(Color.BLACK, 
+                    if (!this.isAdmin) {
+                        Message request = new Message(Color.BLACK,
                                 this.name, "hey man id like to connect");
                         request.setConnectRequest();
-                        sendMessage(request);}
+                        sendMessage(request);
+                    }
 
 
                 }
@@ -155,49 +161,49 @@ public class Client implements MessageReceiver {
         }
     }
 
-    public String getConnectedIP(){
+    public String getConnectedIP() {
         /*
         hämtar server ip
         */
         return connectedIP;
     }
-    
+
     public void setName(String name) {
         this.name = name;
         haveSetName = true;
     }
-    
-    public String getName(){
+
+    public String getName() {
         return name;
     }
-    
-    public void sendFileRequest(Message message,String IP){
+
+    public void sendFileRequest(Message message, String IP) {
         /*
         Olika sub-metoder för om användaren är admin eller ej
         */
         waitingForFile = true;
-        if(this.isAdmin){
+        if (this.isAdmin) {
             sendServerFileRequest(message, IP);
-        }
-        else{
+        } else {
             sendClientFileRequest(message, IP);
         }
-        
+
     }
-    
-    private void sendServerFileRequest(Message message,String IP){
+
+    private void sendServerFileRequest(Message message, String IP) {
         /*
         Är man admin så använder man serverns metod för o passa pm till 
         mottagare
         */
-            server.sendFileRequest(message, IP);
+        server.sendFileRequest(message, IP);
     }
-    private void sendClientFileRequest(Message message,String IP){
+
+    private void sendClientFileRequest(Message message, String IP) {
         /*
         är man inte admin så skickar man till servern helt enkelt.
         */
-            this.sendMessage(message);
-        
+        this.sendMessage(message);
+
     }
 
     public void sendMessage(Message message) {
@@ -209,22 +215,22 @@ public class Client implements MessageReceiver {
         myRepresentation.sendString(message);
     }
 
-    public void receiveFR(Message message, String ip){
+    public void receiveFR(Message message, String ip) {
         /*
         Specialare för ifall man får en filerequest, så det öppnas fönster.
         */
-        
-            if(message.isFileRequest()){
+
+        if (message.isFileRequest()) {
             System.out.println("ay wtf");
             window.createReceiveWindow(message.getFileRequest().getFileName(),
                     message.getSenderName(),
-                    message.getFileRequest().getFileSize(),ip);
-            
+                    message.getFileRequest().getFileSize(), ip);
+
         }
-        
-        
+
+
     }
-    
+
     public void receive(Message message, ClientRep sender) {
         /*
         Kollar vad som skall göras med ett mottaget message. Troligen trycks de
@@ -235,7 +241,7 @@ public class Client implements MessageReceiver {
         medelanden som vi vill.
         */
 
-        if(message.isFileRequest()){
+        if (message.isFileRequest()) {
             /*
             Används de här när vi har special metoden? 
             
@@ -244,11 +250,11 @@ public class Client implements MessageReceiver {
             System.out.println("ay wtf");
             window.createReceiveWindow(message.getFileRequest().getFileName(),
                     message.getSenderName(),
-                    message.getFileRequest().getFileSize(),connectedIP);
-            
+                    message.getFileRequest().getFileSize(), connectedIP);
+
         }
-        if(message.isFileResponse()&&
-                waitingForFile){
+        if (message.isFileResponse() &&
+                waitingForFile) {
             /*
             väntar man på en filrespons så öppnar man en filesender o skickar 
             över filen
@@ -258,24 +264,55 @@ public class Client implements MessageReceiver {
             waitingForFile = false;
             try {
                 FileSender sendo = new FileSender(
-                        message.getFileResponse().getPort(),sentFilePath);
+                        message.getFileResponse().getPort(), sentFilePath);
             } catch (IOException ex) {
                 Logger.getLogger(
                         Client.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-        }
-        else{
+
+        } else {
             window.handleMessage(message); // printa i chattfönster
             System.out.flush();
         }
     }
-    
-    public ClientRep getMyRep(){
+
+    public void setEncryption(String type) {
+
+        /*
+        Denna metod väljer krypterin genom att bestämma hur dennes ClienRep ska konvertera medelanden. Notera att den
+        kryptering vi sätter här endast bestämmer vilken kryptering vi skickar med, vi kan fortfarande ta emot
+        medelanden med all kryptering som vi stödjer. Indatan för denna metod är en sträng som ska vara namnet på
+        krypteringsalgoritmen, t ex AES eller Caesar.
+         */
+
+        if (type.equalsIgnoreCase("AES")) {
+            try {
+                this.myRepresentation.registerMessageConverter(new AESMessageConverter());
+            } catch(Exception e) {
+                /*
+                Detta får aldrig hända.
+                 */
+
+                e.printStackTrace();
+            }
+        } else if (type.equalsIgnoreCase("none")) {
+            this.myRepresentation.registerMessageConverter(new DefaultMessageConverter());
+        } else {
+
+            /*
+            Om typen (krypteringsalgoritmen) inte stödjs, så skickar vi ett medelande i loggen, tänker att detta inte ska
+            hända, men vi har nån slags felhantering nu.
+             */
+
+            System.err.println("The program does not support encryptoin algorithm: "+type+".");
+        }
+    }
+
+    public ClientRep getMyRep() {
         return myRepresentation;
     }
 
-    public ChatWindow getWindow(){
+    public ChatWindow getWindow() {
         return window;
     }
 }
