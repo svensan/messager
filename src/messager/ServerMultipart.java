@@ -99,6 +99,8 @@ public class ServerMultipart extends Server {
     public void sendMessageToGroupChat(Message message) {
         /*
         Outdated eller oanvänd ?
+
+        Tror jag tänkte använda denna i multipart, men du använde en annan lösning istället.
         */
         this.getClients().forEach(p -> {
             if(p.acceptedConnection()){

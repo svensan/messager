@@ -10,6 +10,12 @@ ta messages till strängar som kan skickas över konnection ???
 */
 public class AESMessageConverter extends AbstractMessageConverter implements MessageConverter {
 
+    /*
+    Denna klass är en MessageConverter, och används då för att konvertera medelanden från Medelande-klassen till XML-kod
+    representerat med en sträng. För mer information om de allmänna metoden hos MessageConverter se MessageConverter-klassen.
+    Det som är speciellt för denna klass är att den krypterar XML-koden med AES-kryptering.
+     */
+
     private Encryptor encryption;
     private static final String ALGORITHM = "AES";
 
@@ -18,17 +24,15 @@ public class AESMessageConverter extends AbstractMessageConverter implements Mes
         this.encryption = factory.getEncryptor(ALGORITHM);
     }
 
-    public static String toHexadecimal(String text) {
-        try {
-            byte[] myBytes = text.getBytes("UTF-8");
-            return DatatypeConverter.printHexBinary(myBytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public String convertMessage(Message message) {
+        /*
+        Det är denna metod som krypterar medelandet. Den konverterar först medelandet till XML-kod i vanlig mening. Sedan
+        så krypteras denna XML-kod med AES-kryptering. Efter kryptering så sätts encryption-taggar på med attribut "key"
+        och attribut "type". Key genereras av Encryptor-klassen (se denna klass för mer information) och type är
+        krypteringsalgoritmen, alltså AES. För att undvika tecken som är svåra att hantera så omvandlas de krypterade
+        medelandet och nyckeln till Hex-kod.
+         */
+
         String XMLMessage = getXMLFromMessage(message);
 
         try {

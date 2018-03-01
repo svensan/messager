@@ -7,12 +7,18 @@ import java.security.SecureRandom;
 
 public class AESEncryptor extends Encryptor {
     /*
-    Den här tar hand om kryptering
+    Den här klassen tar hand om kryptering. Denna klass ska kunna göra de tre fundamentala sakerna som kryptering kräver,
+    den kan kryptera, dekryptera och generera nycklar.
     
     TODO KOMMENTERA DETTA SVEN!!!
     */
 
     protected byte[] encrypt(byte[] key, byte[] value) {
+        /*
+        Denna metod krypterar enligt AES-algoritmen. Den använder metoder/klasser från javax.crypto, så om en vill ha mer
+        förståelse en att denna metod krypterar så rekomenderas att läsa dokumentationen av dessa klasser.
+         */
+
         try {
             SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
 
@@ -27,6 +33,11 @@ public class AESEncryptor extends Encryptor {
     }
 
     protected byte[] decrypt(byte[] key, byte[] value) {
+        /*
+        Denna metod dekrypterar ett medelande enligt AES-algoritmen. På samma sätt som för encrypt, så om en vill ha
+        mer specifik information om hur detta fungerar läs javax.crypto dokumentationen.
+         */
+
         try {
             SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
 
@@ -42,6 +53,10 @@ public class AESEncryptor extends Encryptor {
     }
 
     protected byte[] generateKey() {
+        /*
+        Denna metod genererar en ny säker nyckel. Vi använder javas egna SecureRandom för att generera slump till nyckeln.
+         */
+
         try {
             SecureRandom random = new SecureRandom();
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");

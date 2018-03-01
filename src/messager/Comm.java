@@ -10,7 +10,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Comm implements Runnable {
     
     /*
-    Basically socketen o strömmen o allt här
+    A class that wraps the socket to simplify sending and receiving messages. This class is dynamic in the sense that it
+    contains a interface which chooses how one receives messages (receiver) so that the class that want to use Comm
+    can decide how messages are received.
     
     TODO SVEN kommentera
     */
@@ -21,9 +23,14 @@ public class Comm implements Runnable {
     private BufferedReader input;
     private ClientRep myOwner;
     private AtomicBoolean running;
-    private Thread runThread;
 
     public Comm(Socket connection, ClientRep myOwner) {
+        /*
+        Denna konstruktor är högst relevant eftersom att det är här vi trådar av separata användare. Alltså när en ny
+        klient joinar servern så skapar vi en ClientRep åt dom, och det är här vi ger den ClientRep-instansen en egen
+        tråd.
+         */
+
         myConnection = connection;
         this.myOwner = myOwner;
         running = new AtomicBoolean(true);
@@ -40,7 +47,12 @@ public class Comm implements Runnable {
         String retIP = myConnection.getInetAddress().toString().substring(1);
         return retIP;
     }
+
     private void setUpStreams() {
+        /*
+        Sets up the output and input stream. To simplify message sending we use a BufferedReader on the inputstream
+        and a printwriter on the output stream.
+         */
         try {
             output = new PrintWriter(this.myConnection.getOutputStream());
             input = new BufferedReader(
@@ -55,7 +67,8 @@ public class Comm implements Runnable {
 
         while (getRunning()) {
             /*
-            Sitter o lyssnar på strömmen efter medellanden
+            Sitter o lyssnar på strömmen efter medellanden. After a message is received the instance calls it's owner to
+            handle the inputstring, sending the message up in the class hierarchy.
             */
             try {          
                 //System.out.println("1 ");
@@ -84,12 +97,18 @@ public class Comm implements Runnable {
     }
 
     private void sleep(int sleepInterval) {
+        /*
+        forces the thread to sleep.
+         */
         try {
             Thread.sleep(sleepInterval);
         } catch (InterruptedException e) { }
     }
 
     private void receiveMessage(Message message) {
+        /*
+        The class name feels selfexplanatory.
+         */
         receiver.receive(message, myOwner);
     }
 
@@ -105,16 +124,20 @@ public class Comm implements Runnable {
     }
 
     public void registerMessager(MessageReceiver messager) {
+        /*
+        The receiver is needed to handle a incomming message, here we register the receive method. That is, we register
+        what the Comm should do when it receives a message.
+         */
         this.receiver = messager;
     }
 
-    
     public boolean getRunning(){
         /*
         Kollar om den lyssnar
         */
         return running.get();
     }
+
     public void close() {
         System.out.println("You closed your socket");
         try {
@@ -122,18 +145,15 @@ public class Comm implements Runnable {
             Stänger connectionen på ett sätt så vi ej får trådlås
             todo ta bort all debug skiten
             */
-            running.set(false); 
-           // System.out.println("1");
-//            runThread.interrupt();
-         //   System.out.println("2");
+            running.set(false);
 
             myConnection.close();
-          //  System.out.println("5");
+
             try{
             input.close();
-           // System.out.println("3");
+
             output.close();
-          //  System.out.println("4");
+
             }catch(SocketException e){
                 System.out.println("fackit");
                 
