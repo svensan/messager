@@ -100,6 +100,7 @@ public class MainMenu{
         JTextField adressBar;
         JTextField cNameBar;
         JTextField portBar;
+        JTextField cEncryptBar;
         JButton cConnectButton;
         JButton cCloseButton;
         
@@ -118,6 +119,7 @@ public class MainMenu{
             adressBar = new JTextField("Please enter IP");
             portBar = new JTextField("Please enter port");
             cNameBar = new JTextField("Please enter a name");
+            cEncryptBar = new JTextField("Please enter encryption (AES,none)");
             
             cConnectButton = new JButton("Connect*");
             cConnectButton.addActionListener(new ActionListener(){
@@ -139,6 +141,7 @@ public class MainMenu{
 
                 Client client = new Client(false);
                 client.setName(name);
+                client.setEncryption(cEncryptBar.getText());
                 client.getConnection(adress, port);
                 cMainFrame.dispose();
                 
@@ -157,6 +160,7 @@ public class MainMenu{
             cMainPanel.add(cNameBar);
             cMainPanel.add(adressBar);
             cMainPanel.add(portBar);
+            cMainPanel.add(cEncryptBar);
             cMainPanel.add(cConnectButton);
             cMainPanel.add(cCloseButton);
             
@@ -180,6 +184,7 @@ public class MainMenu{
         JPanel hMainPanel; // ALLT sitter på mainpanel
         JTextField adressBar;
         JTextField nameBar;
+        JTextField hEncryptBar;
         JButton hConnectButton;
         JButton hCloseButton;
         
@@ -193,6 +198,7 @@ public class MainMenu{
             
             adressBar = new JTextField("Please enter PORT");
             nameBar = new JTextField("Please enter your name");
+            hEncryptBar = new JTextField("Enter encryption (AES,none)");
             
             hConnectButton = new JButton("Host");
             hConnectButton.addActionListener(new ActionListener(){
@@ -226,6 +232,7 @@ public class MainMenu{
                 
                 Client client = new Client(true);
                 client.setName(name);
+                client.setEncryption(hEncryptBar.getText());
                 client.setServer(server);
                 client.getConnection("localhost", port);
                 server.setOwner(client);
@@ -245,6 +252,7 @@ public class MainMenu{
             
             hMainPanel.add(nameBar);
             hMainPanel.add(adressBar);
+            hMainPanel.add(hEncryptBar);
             hMainPanel.add(hConnectButton);
             hMainPanel.add(hCloseButton);
             

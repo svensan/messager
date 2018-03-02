@@ -3,11 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/FileRequest.java</file>
+            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/Comm.java</file>
             <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/FileSender.java</file>
-            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/FileResponse.java</file>
-            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/Message.java</file>
-            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/MainMenu.java</file>
+            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/ClientRep.java</file>
+            <file>file:/Users/maxoliveberg/NetBeansProjects/messager/src/messager/Client.java</file>
         </group>
     </open-files>
 </project-private>
