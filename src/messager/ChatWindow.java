@@ -265,7 +265,15 @@ public class ChatWindow {
                         en filerequest baserat på de.
 
                         */
+                        if(user.isWaiting()){
+                            System.out.println(
+                                    "handle the other thing 1stl ol");
+                            return;
+                            
+                        }
+                        
                         File theFile;
+                        
                         try{
                             /*
                             bör hindra file fuckery om de ens är möjligt
@@ -277,6 +285,7 @@ public class ChatWindow {
                                     + " im aborting this shit");
                             return;
                         }
+                        user.setSendInfo(filePath);
                         FileRequest requesto = new FileRequest(fileName,
                                 (int)fileSize);
                         

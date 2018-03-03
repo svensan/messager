@@ -44,14 +44,16 @@ public class Client implements MessageReceiver {
         textColor = black;
     }
 
-    public void setSendInfo(int port, int size, String fName, String fPath) {
+    public void setSendInfo(String fPath) {
         /*
         Oanvändt i vår implentation?
         */
-        sentFilePort = port;
-        sentFileSize = size;
-        sentFileName = fName;
+
         sentFilePath = fPath;
+    }
+    
+    public boolean isWaiting(){
+        return waitingForFile;
     }
 
     public boolean isAdmin() {
