@@ -31,6 +31,8 @@ public class Client implements MessageReceiver {
     private int sentFileSize;
     private String sentFileName;
     private String sentFilePath;
+    private String type;
+    private boolean delayedEncryption;
 
     private boolean waitingForFile;
 
@@ -48,11 +50,10 @@ public class Client implements MessageReceiver {
         /*
         Oanvändt i vår implentation?
         */
-
         sentFilePath = fPath;
     }
-    
-    public boolean isWaiting(){
+
+    public boolean isWaiting() {
         return waitingForFile;
     }
 
@@ -136,6 +137,11 @@ public class Client implements MessageReceiver {
                 connectedIP = host;
                 if (mySocket.isConnected()) {
                     myRepresentation = new ClientRep(mySocket, this);
+
+                    if (delayedEncryption) {
+                        delayedEncryption = false;
+                        this.setEncryption(this.type);
+                    }
 
                     if (isAdmin) {
                         myRepresentation.setHost(true);
@@ -224,15 +230,15 @@ public class Client implements MessageReceiver {
 
         if (message.isFileRequest()) {
             System.out.println("ay wtf");
+
             window.createReceiveWindow(message.getFileRequest().getFileName(),
                     message.getSenderName(),
-                    message.getFileRequest().getFileSize(), ip, 
+                    message.getFileRequest().getFileSize(), ip,
                     message.getText());
-
         }
 
 
-    }
+        }
 
     public void receive(Message message, ClientRep sender) {
         /*
@@ -291,16 +297,20 @@ public class Client implements MessageReceiver {
         krypteringsalgoritmen, t ex AES eller Caesar.
          */
 
-        if (type.equalsIgnoreCase("AES")) {
-            try {
-                this.myRepresentation.registerMessageConverter(new AESMessageConverter());
-            } catch(Exception e) {
-                /*
-                Detta får aldrig hända.
-                 */
+        if (myRepresentation == null) {
+            this.delayedEncryption = true;
+            this.type = type;
+            return;
+        }
 
+        if (type.equalsIgnoreCase("AES") || type.equalsIgnoreCase("Caesar")) {
+            try {
+                System.out.println(myRepresentation);
+                this.myRepresentation.registerMessageConverter(new EncryptedMessageConverter(type));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
+
         } else if (type.equalsIgnoreCase("none")) {
             this.myRepresentation.registerMessageConverter(new DefaultMessageConverter());
         } else {
@@ -310,7 +320,7 @@ public class Client implements MessageReceiver {
             hända, men vi har nån slags felhantering nu.
              */
 
-            System.err.println("The program does not support encryptoin algorithm: "+type+".");
+            System.err.println("The program does not support encryptoin algorithm: " + type + ".");
         }
     }
 

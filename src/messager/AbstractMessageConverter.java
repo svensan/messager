@@ -99,11 +99,20 @@ public abstract class AbstractMessageConverter implements MessageConverter{
         } else {
             String[] attributeName = {"color"};
             String[] attibuteValue = {this.getHexColor(message.getColor())};
-            String ret = addTagWithAttribute("text", attributeName, attibuteValue, message.getText());
+
+            String retText = convertXMLsymbols(message.getText());
+
+            String ret = addTagWithAttribute("text", attributeName, attibuteValue, retText);
             if(message.isDisconnectMessage()){
                 ret = ret+"<disconnect/>";
             }
             return ret;
         }
     }
+
+    private String convertXMLsymbols(String text) {
+        text = text.replaceAll(">","&gt;");
+        return text.replaceAll("<","&lt;");
+    }
+
 }

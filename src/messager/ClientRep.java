@@ -41,7 +41,7 @@ public class ClientRep {
     String connectionAdress;
     boolean acceptedConnection = false;
 
-    public ClientRep(Socket connection, MessageReceiver messager) 
+    public ClientRep(Socket connection, MessageReceiver messager)
             throws Exception {
         this.connection = new Comm(connection, this);
         this.connectionAdress = connection.getInetAddress().getHostAddress();
@@ -60,18 +60,18 @@ public class ClientRep {
         return connection.getSocket();
     }
 
-    public boolean firstMessage(){
+    public boolean firstMessage() {
         /*
         returnerar om en client rep har skickat ett medellande tidigare.
         relevant för server.
         */
         return firstMessage;
     }
-    
-    public void setFirstMessage(boolean b){
+
+    public void setFirstMessage(boolean b) {
         firstMessage = b;
     }
-    
+
     public String getIP() {
         //System.out.println("ip fetched: "+connection.getIP());
         return connection.getIP();
@@ -129,6 +129,7 @@ public class ClientRep {
     }
 
     public Message handleInputMessage(String messageString) throws Exception {
+
         /*
         Parsear ett inkommet string och gör om de till ett message helt enkelt.
         För att kunna göra detta så måste vi
@@ -139,8 +140,9 @@ public class ClientRep {
         nedan. Parsern parsar heller inte strängar direkt, så vi måst konvertera
         från sträng till en InputStream.
         */
+
         MyParceHandler myHandler = new MyParceHandler();
-        InputStream stream = 
+        InputStream stream =
                 new ByteArrayInputStream(
                         messageString.getBytes(StandardCharsets.UTF_8.name()));
 
@@ -150,7 +152,7 @@ public class ClientRep {
         } catch (Exception e) {
             System.out.println("OOOOps");
             return new Message(Color.RED, "ERROR",
-                    "Sender: "+this.getIP()+" sent broken XML.");
+                    "Sender: " + this.getIP() + " sent broken XML.");
         }
 
         return myHandler.getMessage();
@@ -182,9 +184,9 @@ public class ClientRep {
         return acceptedConnection;
     }
 
-    public void acceptConnection(){
-            acceptedConnection = true;
-        }
+    public void acceptConnection() {
+        acceptedConnection = true;
+    }
 
 
     private class MyParceHandler extends DefaultHandler {
@@ -199,9 +201,11 @@ public class ClientRep {
 
         private String messageSender;
         private Color color = Color.BLACK;
+        private StringBuilder textBuilder = new StringBuilder();
         private String text;
         private boolean haveSetName = false;
         private boolean haveSetColor = false;
+        private boolean pickUpText = false;
         private boolean isEncrypted = false;
         private String type;
         private boolean messageContainsFileRequest = false;
@@ -214,8 +218,8 @@ public class ClientRep {
         private boolean messageIsDisconnect = false;
 
         @Override
-        public void startElement(String uri, String localName, 
-                String qName, Attributes attributes) {
+        public void startElement(String uri, String localName,
+                                 String qName, Attributes attributes) {
             /*
             Denna metod bestämmer vad vi ska göra när vi stöter på en starttag.
             Eftersom vi vill kunna hantera en mängd
@@ -229,13 +233,17 @@ public class ClientRep {
 
         @Override
         public void endElement(String uri, String localName,
-                String qName) throws SAXException {
+                               String qName) throws SAXException {
             /*
             Denna klass bestämmer vad som ska hända när vi stöter på en sluttag.
             Notera att vi inte gör något, detta kommer
             sig av att vi inte är intresserade av sluttaggar i denna chattapp.
              */
-            
+
+            if (pickUpText) {
+                text = textBuilder.toString();
+            }
+
         }
 
         @Override
@@ -259,18 +267,16 @@ public class ClientRep {
                     informationen.
                      */
                     isEncrypted = false;
-                    String encryptedMessageHex = new String(ch, start, length);
+                    String encryptedStringMessage = new String(ch, start, length);
 
-                    byte[] encryptedBytes =
-                            DatatypeConverter.parseHexBinary(
-                                    encryptedMessageHex);
+                    byte[] encryptedBytes = DatatypeConverter.parseHexBinary(encryptedStringMessage);
 
                     Encryptor encryptor = encryptionFactory.getEncryptor(type);
                     byte[] decryptedBytes =
                             encryptor.decrypt(key, encryptedBytes);
 
                     SAXParser newParser = ClientRep.this.getParser();
-                    InputStream stream = 
+                    InputStream stream =
                             new ByteArrayInputStream(decryptedBytes);
 
                     newParser.parse(stream, this);
@@ -281,7 +287,9 @@ public class ClientRep {
                 /*
                 Om kryptering inte används så sparar vi endast texten.
                  */
-                text = new String(ch, start, length);
+                
+                textBuilder.append(this.convertXMLsymbols(new String(ch, start, length)));
+                pickUpText = true;
             }
         }
 
@@ -393,7 +401,7 @@ public class ClientRep {
             läs under den klassen.
              */
 
-            boolean acceptedFileRequest = 
+            boolean acceptedFileRequest =
                     attributes.getValue("reply").equalsIgnoreCase("yes");
 
             int port = Integer.valueOf(attributes.getValue("port"));
@@ -433,10 +441,12 @@ public class ClientRep {
                 return null;
             }
         }
-    
 
+        private String convertXMLsymbols(String text) {
+            text = text.replaceAll("&gt;",">");
+            return text.replaceAll("&lt;","<");
+        }
 
-       
     }
-    
+
 }

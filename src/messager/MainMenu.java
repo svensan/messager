@@ -198,7 +198,7 @@ public class MainMenu{
             
             adressBar = new JTextField("Please enter PORT");
             nameBar = new JTextField("Please enter your name");
-            hEncryptBar = new JTextField("Enter encryption (AES,none)");
+            hEncryptBar = new JTextField("Enter encryption (Caesar,AES,none)");
             
             hConnectButton = new JButton("Host");
             hConnectButton.addActionListener(new ActionListener(){
