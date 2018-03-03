@@ -327,11 +327,12 @@ public class ChatWindow {
         }
         
         public void createReceiveWindow(String name,String sendName, long size,
-                String argIP){
+                String argIP, String text){
             /*
             den här metoden används när man får en filrequest.
             */
-            ReceiveWindow windo = new ReceiveWindow(name,sendName,size,argIP);
+            ReceiveWindow windo = new ReceiveWindow(name,sendName,size,argIP,
+            text);
             
         }
         
@@ -357,12 +358,13 @@ public class ChatWindow {
             
             String filePath;
             public ReceiveWindow(String name,String sendName, long size,
-                    String argIP){
+                    String argIP, String text){
                 /*
                 Visar fildata så får man svara
                 */
                 infoField = new JTextField("File name: " + name + " Size: " 
-                                            +size+". Sent by:" + sendName);
+                                            +size+". Sent by:" + sendName + 
+                        " Message: "+ text);
                 infoField.setEditable(false);
                 
                 rPathField = new JTextField("C://"+name);

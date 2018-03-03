@@ -226,7 +226,8 @@ public class Client implements MessageReceiver {
             System.out.println("ay wtf");
             window.createReceiveWindow(message.getFileRequest().getFileName(),
                     message.getSenderName(),
-                    message.getFileRequest().getFileSize(), ip);
+                    message.getFileRequest().getFileSize(), ip, 
+                    message.getText());
 
         }
 
@@ -254,7 +255,8 @@ public class Client implements MessageReceiver {
             System.out.println("ay wtf");
             window.createReceiveWindow(message.getFileRequest().getFileName(),
                     message.getSenderName(),
-                    message.getFileRequest().getFileSize(), connectedIP);
+                    message.getFileRequest().getFileSize(), connectedIP,
+                    message.getText());
 
         }
         if (message.isFileResponse() &&
