@@ -46,14 +46,15 @@ public class Client implements MessageReceiver {
         textColor = black;
     }
 
-    public void setSendInfo(int port, int size, String fName, String fPath) {
+    public void setSendInfo(String fPath) {
         /*
         Oanvändt i vår implentation?
         */
-        sentFilePort = port;
-        sentFileSize = size;
-        sentFileName = fName;
         sentFilePath = fPath;
+    }
+
+    public boolean isWaiting() {
+        return waitingForFile;
     }
 
     public boolean isAdmin() {
@@ -229,14 +230,15 @@ public class Client implements MessageReceiver {
 
         if (message.isFileRequest()) {
             System.out.println("ay wtf");
+
             window.createReceiveWindow(message.getFileRequest().getFileName(),
                     message.getSenderName(),
-                    message.getFileRequest().getFileSize(), ip);
-
+                    message.getFileRequest().getFileSize(), ip,
+                    message.getText());
         }
 
 
-    }
+        }
 
     public void receive(Message message, ClientRep sender) {
         /*
@@ -259,7 +261,8 @@ public class Client implements MessageReceiver {
             System.out.println("ay wtf");
             window.createReceiveWindow(message.getFileRequest().getFileName(),
                     message.getSenderName(),
-                    message.getFileRequest().getFileSize(), connectedIP);
+                    message.getFileRequest().getFileSize(), connectedIP,
+                    message.getText());
 
         }
         if (message.isFileResponse() &&
