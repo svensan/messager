@@ -1,27 +1,16 @@
 package messager;
 
 import javax.xml.bind.DatatypeConverter;
-import java.security.SecureRandom;
-/*
-TODO KOMMENTERA DETTA SVEN !!
 
-verkar bygga på message konverter abstrakta klassen så vi använder den för att
-ta messages till strängar som kan skickas över konnection ???
-*/
-public class AESMessageConverter extends AbstractMessageConverter implements MessageConverter {
-
-    /*
-    Denna klass är en MessageConverter, och används då för att konvertera medelanden från Medelande-klassen till XML-kod
-    representerat med en sträng. För mer information om de allmänna metoden hos MessageConverter se MessageConverter-klassen.
-    Det som är speciellt för denna klass är att den krypterar XML-koden med AES-kryptering.
-     */
+public class EncryptedMessageConverter extends AbstractMessageConverter {
 
     private Encryptor encryption;
-    private static final String ALGORITHM = "AES";
+    private String algorithm;
 
-    public AESMessageConverter() throws Exception {
+    public EncryptedMessageConverter(String algorithm) throws Exception {
         EncryptionFactory factory = new EncryptionFactory();
-        this.encryption = factory.getEncryptor(ALGORITHM);
+        this.encryption = factory.getEncryptor(algorithm);
+        this.algorithm = algorithm;
     }
 
     public String convertMessage(Message message) {
@@ -40,7 +29,7 @@ public class AESMessageConverter extends AbstractMessageConverter implements Mes
             byte[] encryptedBytes = encryption.encrypt(key, XMLMessage.getBytes("UTF-8"));
 
             String[] attributeName = {"type", "key"};
-            String[] attributeValue = {ALGORITHM, DatatypeConverter.printHexBinary(key)};
+            String[] attributeValue = {algorithm, DatatypeConverter.printHexBinary(key)};
 
             String holdString = addTagWithAttribute("encrypted", attributeName, attributeValue,
                     DatatypeConverter.printHexBinary(encryptedBytes));
@@ -51,5 +40,11 @@ public class AESMessageConverter extends AbstractMessageConverter implements Mes
         }
         return null;
     }
-}
 
+    public void setEncryption(String algorithm) {
+        EncryptionFactory factory = new EncryptionFactory();
+        this.encryption = factory.getEncryptor(algorithm);
+        this.algorithm = algorithm;
+    }
+
+}
