@@ -83,7 +83,19 @@ public class Comm implements Runnable {
                 String stringMessage = input.readLine();
                 System.out.println(stringMessage);
                 if (stringMessage == null) {
-                    throw new RuntimeException("Peer dead");
+                    /*
+                    Om connectionen bryts så stänger vi för att undvika galna
+                    exceptions. Ifall servern märker att någon droppat så tas
+                    de ur klient listan, så de kan ansluta igen eller så.
+                    */
+                    this.close();
+                    if(receiver instanceof Server|| receiver instanceof
+                            ServerMultipart){
+                        Server sReceiver = (Server)receiver;
+                        sReceiver.removeRep(this.myOwner);
+                    }
+                    System.out.println("Peer dead.");
+
                 }
                 //System.out.println("2 " + stringMessage);
                 System.out.flush();

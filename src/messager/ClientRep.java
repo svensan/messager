@@ -30,7 +30,7 @@ public class ClientRep {
     */
 
     private Encryptor encryption;
-    private MessageConverter messageConverter;
+    private AbstractMessageConverter messageConverter;
     private String encryptionType = "none";
     private Comm connection;
     private SAXParserFactory saxFactory = SAXParserFactory.newInstance();
@@ -105,7 +105,7 @@ public class ClientRep {
         isHost = b;
     }
 
-    public void registerMessageConverter(MessageConverter messageConverter) {
+    public void registerMessageConverter(AbstractMessageConverter messageConverter) {
         /*
         Registrerar hur vi ska konvertera medelanden från medelande-klassen 
         till strängar. I defaultfallet så gör vi

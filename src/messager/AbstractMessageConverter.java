@@ -3,7 +3,7 @@ package messager;
 import javax.xml.bind.DatatypeConverter;
 import java.awt.*;
 
-public abstract class AbstractMessageConverter implements MessageConverter {
+public abstract class AbstractMessageConverter implements Cloneable {
     /*
     Abstrakt klass för att konvertera message klassen till en sträng som kan
     skickas över streamen. Implementeras i ClientRep-klassen.
@@ -12,6 +12,8 @@ public abstract class AbstractMessageConverter implements MessageConverter {
     */
 
     public abstract String convertMessage(Message message);
+
+    public abstract AbstractMessageConverter clone();
 
     private String getHexColor(Color myColor) {
         /*
@@ -123,5 +125,4 @@ public abstract class AbstractMessageConverter implements MessageConverter {
         text = text.replaceAll(">", "&gt;");
         return text.replaceAll("<", "&lt;");
     }
-
 }

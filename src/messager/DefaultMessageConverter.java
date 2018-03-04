@@ -2,7 +2,7 @@ package messager;
 /*
 TODO sven kommentera detta
 */
-public class DefaultMessageConverter extends AbstractMessageConverter implements MessageConverter {
+public class DefaultMessageConverter extends AbstractMessageConverter {
 
     /*
     Detta är en messageconverter som är default, alltså använder ingen kryptering. Allt den gör är att sätta taggar
@@ -12,5 +12,9 @@ public class DefaultMessageConverter extends AbstractMessageConverter implements
     public String convertMessage(Message message) {
         String holdString = getXMLFromMessage(message);
         return addTagWithAttribute("message", "sender", message.getSenderName(), holdString);
+    }
+
+    public DefaultMessageConverter clone() {
+        return new DefaultMessageConverter();
     }
 }
