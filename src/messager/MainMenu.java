@@ -232,8 +232,8 @@ public class MainMenu{
                 
                 Client client = new Client(true);
                 client.setName(name);
-                client.setEncryption(hEncryptBar.getText());
                 client.setServer(server);
+                client.setEncryption(hEncryptBar.getText());
                 client.getConnection("localhost", port);
                 server.setOwner(client);
                 

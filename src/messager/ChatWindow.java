@@ -290,8 +290,20 @@ public class ChatWindow {
                         return;
                     }
                     user.setSendInfo(filePath);
-                    FileRequest requesto = new FileRequest(fileName,
-                            (int) fileSize);
+
+                    FileRequest requesto;
+
+                    if (user.isUsingEncryption()) {
+                        EncryptionFactory factory = new EncryptionFactory();
+                        Encryptor encryptor = factory.getEncryptor(user.getType());
+
+                        byte[] key = encryptor.generateKey();
+
+                        requesto = new FileRequest(fileName, (int) fileSize, key, user.getType());
+                    } else {
+                        requesto = new FileRequest(fileName,
+                                (int) fileSize);
+                    }
 
                     Message fileReqMsg = new Message(user.getName(),
                             messageField.getText(), requesto);
@@ -300,7 +312,7 @@ public class ChatWindow {
                         recipient = recipientField.getText();
                     }
                     user.sendFileRequest(fileReqMsg, recipient);
-
+                    sMainFrame.dispose();
                 }
             });
 
@@ -314,7 +326,6 @@ public class ChatWindow {
                             */
 
                     sMainFrame.dispose();
-
                 }
             });
             sMainPanel.add(sCloseButton);
@@ -330,6 +341,11 @@ public class ChatWindow {
 
     }
 
+    public void createReceiveWindow(FileRequest req, String sendName,
+                                    String argIP, String text) {
+        new ReceiveWindow(req, sendName, argIP, text);
+    }
+
     public void createReceiveWindow(String name, String sendName, long size,
                                     String argIP, String text) {
             /*
@@ -337,6 +353,16 @@ public class ChatWindow {
             */
         ReceiveWindow windo = new ReceiveWindow(name, sendName, size, argIP,
                 text);
+
+    }
+
+    public void createReceiveWindow(String name, String sendName, long size,
+                                    String argIP, String text, byte[] key, String type) {
+            /*
+            den här metoden används när man får en filrequest.
+            */
+        ReceiveWindow windo = new ReceiveWindow(name, sendName, size, argIP,
+                text, key, type);
 
     }
 
@@ -361,6 +387,93 @@ public class ChatWindow {
 
 
         String filePath;
+
+        public ReceiveWindow(FileRequest req, String sendName,
+                             String argIP, String text) {
+                            /*
+                Visar fildata så får man svara
+                */
+            infoField = new JTextField("File name: " + req.getFileName() + " Size: "
+                    + req.getFileSize() + ". Sent by:" + sendName +
+                    " Message: " + text);
+            infoField.setEditable(false);
+
+            rPathField = new JTextField("C://" + req.getFileName());
+            rPortField = new JTextField("port");
+            responseField = new JTextField("Type a response here...");
+
+            yesButton = new JButton("Accept file");
+            yesButton.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    /*
+                    Skickar ur ett yes response och öppnar en filereceiver
+                    i väntan på filen
+
+                    TODO timeout timer ???
+                    */
+                    FileResponse respondo = new FileResponse(true,
+                            Integer.parseInt(rPortField.getText()));
+                    Message texado = new Message(user.getColor(),
+                            user.getName(), responseField.getText());
+                    Message messado = new Message(user.getName(), user.getName(), respondo);
+
+                    user.sendMessage(texado);
+                    user.sendMessage(messado);
+
+                    String ip;
+
+                    try {
+                        FileReceiver receivaton = new FileReceiver(
+                                Integer.parseInt(rPortField.getText()),
+                                argIP, rPathField.getText(), req);
+
+
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ChatWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex) {
+                        Logger.getLogger(ChatWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    rMainFrame.dispose();
+                }
+            });
+
+            noButton = new JButton("Deny file");
+            noButton.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    /*
+                    tackar nej till filen
+                    */
+                    FileResponse respondo = new FileResponse(false);
+
+                    Message texado = new Message(user.getColor(),
+                            user.getName(), responseField.getText());
+
+                    Message messado = new Message(
+                            user.getName(), "", respondo);
+
+                    user.sendMessage(texado);
+                    user.sendMessage(messado);
+
+                    rMainFrame.dispose();
+                }
+            });
+
+            rMainPanel = new JPanel();
+            rMainPanel.add(infoField);
+            rMainPanel.add(rPathField);
+            rMainPanel.add(rPortField);
+            rMainPanel.add(responseField);
+            rMainPanel.add(yesButton);
+            rMainPanel.add(noButton);
+
+            rMainFrame = new JFrame();
+            rMainFrame.add(rMainPanel);
+            rMainFrame.pack();
+            rMainFrame.setVisible(true);
+        }
 
         public ReceiveWindow(String name, String sendName, long size,
                              String argIP, String text) {
@@ -401,6 +514,7 @@ public class ChatWindow {
                         FileReceiver receivaton = new FileReceiver(
                                 Integer.parseInt(rPortField.getText()),
                                 argIP, rPathField.getText(), (int) size);
+
                     } catch (InterruptedException ex) {
                         Logger.getLogger(ChatWindow.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (IOException ex) {
@@ -446,6 +560,98 @@ public class ChatWindow {
             rMainFrame.pack();
             rMainFrame.setVisible(true);
 
+
+        }
+
+        public ReceiveWindow(String name, String sendName, long size,
+                             String argIP, String text, byte[] key, String type) {
+                /*
+                Visar fildata så får man svara
+                */
+            infoField = new JTextField("File name: " + name + " Size: "
+                    + size + ". Sent by:" + sendName +
+                    " Message: " + text);
+            infoField.setEditable(false);
+
+            rPathField = new JTextField("C://" + name);
+            rPortField = new JTextField("port");
+            responseField = new JTextField("Type a response here...");
+
+            yesButton = new JButton("Accept file");
+            yesButton.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    /*
+                    Skickar ur ett yes response och öppnar en filereceiver
+                    i väntan på filen
+
+                    TODO timeout timer ???
+                    */
+                    FileResponse respondo = new FileResponse(true,
+                            Integer.parseInt(rPortField.getText()));
+                    Message texado = new Message(user.getColor(),
+                            user.getName(), responseField.getText());
+                    Message messado = new Message(user.getName(), user.getName(), respondo);
+
+                    user.sendMessage(texado);
+                    user.sendMessage(messado);
+
+                    String ip;
+
+                    try {
+                        FileReceiver receivaton = new FileReceiver(
+                                Integer.parseInt(rPortField.getText()),
+                                argIP, rPathField.getText(), (int) size,
+                                key, type);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ChatWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex) {
+                        Logger.getLogger(ChatWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+
+                }
+            });
+
+            noButton = new JButton("Deny file");
+            noButton.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    /*
+                    tackar nej till filen
+                    */
+                    FileResponse respondo = new FileResponse(false,
+                            Integer.parseInt(rPortField.getText()));
+
+                    Message texado = new Message(user.getColor(),
+                            user.getName(), responseField.getText());
+
+                    Message messado = new Message(
+                            user.getName(), "", respondo);
+
+                    user.sendMessage(texado);
+                    user.sendMessage(messado);
+
+                }
+            });
+
+            rMainPanel = new JPanel();
+            rMainPanel.add(infoField);
+            rMainPanel.add(rPathField);
+            rMainPanel.add(rPortField);
+            rMainPanel.add(responseField);
+            rMainPanel.add(yesButton);
+            rMainPanel.add(noButton);
+
+            rMainFrame = new JFrame();
+            rMainFrame.add(rMainPanel);
+            rMainFrame.pack();
+            rMainFrame.setVisible(true);
+
+
+        }
+
+        private void setActionListener() {
 
         }
     }

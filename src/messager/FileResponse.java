@@ -9,6 +9,15 @@ public class FileResponse {
     private int port;
     private boolean acceptedFileRequest;
 
+    public FileResponse(boolean acceptedFileRequest) {
+        if (acceptedFileRequest) {
+            throw new IllegalArgumentException();
+        } else {
+            this.acceptedFileRequest = false;
+            this.port = 6666;
+        }
+    }
+
     public FileResponse(boolean acceptedFileRequest, int port) {
         this.acceptedFileRequest = acceptedFileRequest;
         this.port = port;
