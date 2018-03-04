@@ -162,7 +162,7 @@ public class Client implements MessageReceiver, Runnable {
                         Message request = new Message(Color.BLACK,
                                 this.name, "hey man id like to connect");
                         request.setConnectRequest();
-                        sendMessage(request);
+                        //sendMessage(request);
                     }
 
 

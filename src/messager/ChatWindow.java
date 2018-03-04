@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.security.spec.ECField;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -668,13 +669,22 @@ public class ChatWindow {
         JFrame cMainFrame;
         JPanel cMainPanel;
         JTextField hexField;
+
+        JTextField redInt;
+        JTextField greenInt;
+        JTextField blueInt;
+
         JButton confirmButton;
 
         public ColorWindow(Client aUser) {
 
             cUser = aUser;
 
-            hexField = new JTextField("Enter hexcode");
+            hexField = new JTextField("Enter a color");
+
+            redInt = new JTextField("Enter the amount of red you want (int)");
+            greenInt = new JTextField("Enter the amount of green you want (int)");
+            blueInt = new JTextField("Enter the amount of blue you want (int)");
 
             confirmButton = new JButton("Confirm");
             confirmButton.addActionListener(new ActionListener() {
@@ -686,8 +696,23 @@ public class ChatWindow {
                              */
                     Color newColor = BLACK;
                     try {
-                        newColor =
-                                createColorFromHex(hexField.getText());
+
+                        int red = 0;
+                        int green = 0;
+                        int blue = 0;
+
+                        try {
+                            red = Integer.valueOf(redInt.getText());
+                            green = Integer.valueOf(greenInt.getText());
+                            blue = Integer.valueOf(blueInt.getText());
+                        } catch(Exception exc) {
+                            Message errorMsg = new Message(Color.red, "ERROR", "You picked bad values," +
+                                    " you get the color black.");
+                            ChatWindow.this.handleMessage(errorMsg);
+                        }
+
+                        newColor = new Color(red,green,blue);
+                                //createColorFromHex(hexField.getText());
                     } catch (Exception ex) {
                         System.out.println("shitty hexcode");
                     }
@@ -700,7 +725,10 @@ public class ChatWindow {
 
 
             cMainPanel = new JPanel();
-            cMainPanel.add(hexField);
+            cMainPanel.add(redInt);
+            cMainPanel.add(greenInt);
+            cMainPanel.add(blueInt);
+            //cMainPanel.add(hexField);
             cMainPanel.add(confirmButton);
 
             cMainFrame = new JFrame();

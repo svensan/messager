@@ -24,6 +24,7 @@ public class ServerMultipart extends Server {
                 /*
                 är de en connecto öppnar en connectarone
                 */
+                sender.setHaveSentConReq(true);
                 sender.setFirstMessage(true);
                 this.getOwner().getWindow().createConnectionWindow(
                         message,sender);

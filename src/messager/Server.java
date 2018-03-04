@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
+import static java.awt.Color.BLACK;
+
 public abstract class Server implements MessageReceiver {
     /*
     En klass som håller koll på massa client reps som håller koll på massa
@@ -84,12 +86,27 @@ public abstract class Server implements MessageReceiver {
             if (myClients.size() == 0) {
                 newClient.setHost(true);
                 newClient.acceptConnection();
+                newClient.setHaveSentConReq(true);
             } else {
                 AbstractMessageConverter clientMessageConverter = this.messageConverter.clone();
-                System.out.println(clientMessageConverter);
-
                 newClient.registerMessageConverter(clientMessageConverter);
             }
+
+            Thread t = new Thread(()->{
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if (!newClient.getHaveSentConReq()) {
+                    this.getOwner().getWindow().createConnectionWindow(newClient);
+                    Message deniedMessage = new Message(BLACK, "Server", "Your "
+                            + "client seems like garbage fam i wont lie");
+                    this.sendMessage(deniedMessage, newClient);
+                }});
+
+            t.start();
 
             myClients.add(newClient);
         } catch (Exception e) {

@@ -81,7 +81,6 @@ public class Comm implements Runnable {
                 //System.out.println("1 ");
                 System.out.flush();
                 String stringMessage = input.readLine();
-                System.out.println(stringMessage);
                 if (stringMessage == null) {
                     /*
                     Om connectionen bryts så stänger vi för att undvika galna

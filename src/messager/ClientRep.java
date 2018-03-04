@@ -40,6 +40,7 @@ public class ClientRep {
     byte[] key;
     String connectionAdress;
     boolean acceptedConnection = false;
+    private boolean haveSentConReq = false;
 
     public ClientRep(Socket connection, MessageReceiver messager)
             throws Exception {
@@ -53,6 +54,14 @@ public class ClientRep {
     public String toString() {
 
         return connection.getIP();
+    }
+
+    public boolean getHaveSentConReq() {
+        return haveSentConReq;
+    }
+
+    public void setHaveSentConReq(boolean b) {
+        haveSentConReq = b;
     }
 
     public Socket getSocket() {
