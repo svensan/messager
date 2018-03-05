@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.security.spec.ECField;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -290,8 +291,20 @@ public class ChatWindow {
                         return;
                     }
                     user.setSendInfo(filePath);
-                    FileRequest requesto = new FileRequest(fileName,
-                            (int) fileSize);
+
+                    FileRequest requesto;
+
+                    if (user.isUsingEncryption()) {
+                        EncryptionFactory factory = new EncryptionFactory();
+                        Encryptor encryptor = factory.getEncryptor(user.getType());
+
+                        byte[] key = encryptor.generateKey();
+
+                        requesto = new FileRequest(fileName, (int) fileSize, key, user.getType());
+                    } else {
+                        requesto = new FileRequest(fileName,
+                                (int) fileSize);
+                    }
 
                     Message fileReqMsg = new Message(user.getName(),
                             messageField.getText(), requesto);
@@ -300,7 +313,7 @@ public class ChatWindow {
                         recipient = recipientField.getText();
                     }
                     user.sendFileRequest(fileReqMsg, recipient);
-
+                    sMainFrame.dispose();
                 }
             });
 
@@ -314,7 +327,6 @@ public class ChatWindow {
                             */
 
                     sMainFrame.dispose();
-
                 }
             });
             sMainPanel.add(sCloseButton);
@@ -330,6 +342,11 @@ public class ChatWindow {
 
     }
 
+    public void createReceiveWindow(FileRequest req, String sendName,
+                                    String argIP, String text) {
+        new ReceiveWindow(req, sendName, argIP, text);
+    }
+
     public void createReceiveWindow(String name, String sendName, long size,
                                     String argIP, String text) {
             /*
@@ -337,6 +354,16 @@ public class ChatWindow {
             */
         ReceiveWindow windo = new ReceiveWindow(name, sendName, size, argIP,
                 text);
+
+    }
+
+    public void createReceiveWindow(String name, String sendName, long size,
+                                    String argIP, String text, byte[] key, String type) {
+            /*
+            den här metoden används när man får en filrequest.
+            */
+        ReceiveWindow windo = new ReceiveWindow(name, sendName, size, argIP,
+                text, key, type);
 
     }
 
@@ -361,6 +388,93 @@ public class ChatWindow {
 
 
         String filePath;
+
+        public ReceiveWindow(FileRequest req, String sendName,
+                             String argIP, String text) {
+                            /*
+                Visar fildata så får man svara
+                */
+            infoField = new JTextField("File name: " + req.getFileName() + " Size: "
+                    + req.getFileSize() + ". Sent by:" + sendName +
+                    " Message: " + text);
+            infoField.setEditable(false);
+
+            rPathField = new JTextField("C://" + req.getFileName());
+            rPortField = new JTextField("port");
+            responseField = new JTextField("Type a response here...");
+
+            yesButton = new JButton("Accept file");
+            yesButton.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    /*
+                    Skickar ur ett yes response och öppnar en filereceiver
+                    i väntan på filen
+
+                    TODO timeout timer ???
+                    */
+                    FileResponse respondo = new FileResponse(true,
+                            Integer.parseInt(rPortField.getText()));
+                    Message texado = new Message(user.getColor(),
+                            user.getName(), responseField.getText());
+                    Message messado = new Message(user.getName(), user.getName(), respondo);
+
+                    user.sendMessage(texado);
+                    user.sendMessage(messado);
+
+                    String ip;
+
+                    try {
+                        FileReceiver receivaton = new FileReceiver(
+                                Integer.parseInt(rPortField.getText()),
+                                argIP, rPathField.getText(), req);
+
+
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ChatWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex) {
+                        Logger.getLogger(ChatWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    rMainFrame.dispose();
+                }
+            });
+
+            noButton = new JButton("Deny file");
+            noButton.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    /*
+                    tackar nej till filen
+                    */
+                    FileResponse respondo = new FileResponse(false);
+
+                    Message texado = new Message(user.getColor(),
+                            user.getName(), responseField.getText());
+
+                    Message messado = new Message(
+                            user.getName(), "", respondo);
+
+                    user.sendMessage(texado);
+                    user.sendMessage(messado);
+
+                    rMainFrame.dispose();
+                }
+            });
+
+            rMainPanel = new JPanel();
+            rMainPanel.add(infoField);
+            rMainPanel.add(rPathField);
+            rMainPanel.add(rPortField);
+            rMainPanel.add(responseField);
+            rMainPanel.add(yesButton);
+            rMainPanel.add(noButton);
+
+            rMainFrame = new JFrame();
+            rMainFrame.add(rMainPanel);
+            rMainFrame.pack();
+            rMainFrame.setVisible(true);
+        }
 
         public ReceiveWindow(String name, String sendName, long size,
                              String argIP, String text) {
@@ -401,6 +515,7 @@ public class ChatWindow {
                         FileReceiver receivaton = new FileReceiver(
                                 Integer.parseInt(rPortField.getText()),
                                 argIP, rPathField.getText(), (int) size);
+
                     } catch (InterruptedException ex) {
                         Logger.getLogger(ChatWindow.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (IOException ex) {
@@ -448,6 +563,98 @@ public class ChatWindow {
 
 
         }
+
+        public ReceiveWindow(String name, String sendName, long size,
+                             String argIP, String text, byte[] key, String type) {
+                /*
+                Visar fildata så får man svara
+                */
+            infoField = new JTextField("File name: " + name + " Size: "
+                    + size + ". Sent by:" + sendName +
+                    " Message: " + text);
+            infoField.setEditable(false);
+
+            rPathField = new JTextField("C://" + name);
+            rPortField = new JTextField("port");
+            responseField = new JTextField("Type a response here...");
+
+            yesButton = new JButton("Accept file");
+            yesButton.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    /*
+                    Skickar ur ett yes response och öppnar en filereceiver
+                    i väntan på filen
+
+                    TODO timeout timer ???
+                    */
+                    FileResponse respondo = new FileResponse(true,
+                            Integer.parseInt(rPortField.getText()));
+                    Message texado = new Message(user.getColor(),
+                            user.getName(), responseField.getText());
+                    Message messado = new Message(user.getName(), user.getName(), respondo);
+
+                    user.sendMessage(texado);
+                    user.sendMessage(messado);
+
+                    String ip;
+
+                    try {
+                        FileReceiver receivaton = new FileReceiver(
+                                Integer.parseInt(rPortField.getText()),
+                                argIP, rPathField.getText(), (int) size,
+                                key, type);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ChatWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex) {
+                        Logger.getLogger(ChatWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+
+                }
+            });
+
+            noButton = new JButton("Deny file");
+            noButton.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    /*
+                    tackar nej till filen
+                    */
+                    FileResponse respondo = new FileResponse(false,
+                            Integer.parseInt(rPortField.getText()));
+
+                    Message texado = new Message(user.getColor(),
+                            user.getName(), responseField.getText());
+
+                    Message messado = new Message(
+                            user.getName(), "", respondo);
+
+                    user.sendMessage(texado);
+                    user.sendMessage(messado);
+
+                }
+            });
+
+            rMainPanel = new JPanel();
+            rMainPanel.add(infoField);
+            rMainPanel.add(rPathField);
+            rMainPanel.add(rPortField);
+            rMainPanel.add(responseField);
+            rMainPanel.add(yesButton);
+            rMainPanel.add(noButton);
+
+            rMainFrame = new JFrame();
+            rMainFrame.add(rMainPanel);
+            rMainFrame.pack();
+            rMainFrame.setVisible(true);
+
+
+        }
+
+        private void setActionListener() {
+
+        }
     }
 
     class ColorWindow {
@@ -462,13 +669,22 @@ public class ChatWindow {
         JFrame cMainFrame;
         JPanel cMainPanel;
         JTextField hexField;
+
+        JTextField redInt;
+        JTextField greenInt;
+        JTextField blueInt;
+
         JButton confirmButton;
 
         public ColorWindow(Client aUser) {
 
             cUser = aUser;
 
-            hexField = new JTextField("Enter hexcode");
+            hexField = new JTextField("Enter a color");
+
+            redInt = new JTextField("Enter the amount of red you want (int)");
+            greenInt = new JTextField("Enter the amount of green you want (int)");
+            blueInt = new JTextField("Enter the amount of blue you want (int)");
 
             confirmButton = new JButton("Confirm");
             confirmButton.addActionListener(new ActionListener() {
@@ -480,8 +696,23 @@ public class ChatWindow {
                              */
                     Color newColor = BLACK;
                     try {
-                        newColor =
-                                createColorFromHex(hexField.getText());
+
+                        int red = 0;
+                        int green = 0;
+                        int blue = 0;
+
+                        try {
+                            red = Integer.valueOf(redInt.getText());
+                            green = Integer.valueOf(greenInt.getText());
+                            blue = Integer.valueOf(blueInt.getText());
+                        } catch(Exception exc) {
+                            Message errorMsg = new Message(Color.red, "ERROR", "You picked bad values," +
+                                    " you get the color black.");
+                            ChatWindow.this.handleMessage(errorMsg);
+                        }
+
+                        newColor = new Color(red,green,blue);
+                                //createColorFromHex(hexField.getText());
                     } catch (Exception ex) {
                         System.out.println("shitty hexcode");
                     }
@@ -494,7 +725,10 @@ public class ChatWindow {
 
 
             cMainPanel = new JPanel();
-            cMainPanel.add(hexField);
+            cMainPanel.add(redInt);
+            cMainPanel.add(greenInt);
+            cMainPanel.add(blueInt);
+            //cMainPanel.add(hexField);
             cMainPanel.add(confirmButton);
 
             cMainFrame = new JFrame();

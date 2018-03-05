@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
+import static java.awt.Color.BLACK;
+
 public abstract class Server implements MessageReceiver {
     /*
     En klass som håller koll på massa client reps som håller koll på massa
@@ -23,6 +25,7 @@ public abstract class Server implements MessageReceiver {
     private int port;
     private boolean haveSetPort;
     private Client owner;
+    private AbstractMessageConverter messageConverter;
 
     public Server() {
         /*
@@ -79,10 +82,32 @@ public abstract class Server implements MessageReceiver {
         try {
             Socket newClientCon = server.accept();
             ClientRep newClient = new ClientRep(newClientCon, this);
-            if(myClients.size()==0){
+
+            if (myClients.size() == 0) {
                 newClient.setHost(true);
                 newClient.acceptConnection();
+                newClient.setHaveSentConReq(true);
+            } else {
+                AbstractMessageConverter clientMessageConverter = this.messageConverter.clone();
+                newClient.registerMessageConverter(clientMessageConverter);
             }
+
+            Thread t = new Thread(()->{
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if (!newClient.getHaveSentConReq()) {
+                    this.getOwner().getWindow().createConnectionWindow(newClient);
+                    Message deniedMessage = new Message(BLACK, "Server", "Your "
+                            + "client seems like garbage fam i wont lie");
+                    this.sendMessage(deniedMessage, newClient);
+                }});
+
+            t.start();
+
             myClients.add(newClient);
         } catch (Exception e) {
             e.printStackTrace();
@@ -107,18 +132,18 @@ public abstract class Server implements MessageReceiver {
         receiver.sendString(message);
     }
 
-    public void setOwner(Client own){ 
-        
+    public void setOwner(Client own) {
+
         owner = own;
-        
-        System.out.println("owner set to "+owner.getName());
+
+        System.out.println("owner set to " + owner.getName());
     }
-    
-    public Client getOwner(){
+
+    public Client getOwner() {
         System.out.println("Owner is " + owner.getName());
         return owner;
     }
-    
+
     public void closeEverything() {
         /*
         Försöker stänga ner servern på ett kontrollerat sätt. Vi börjar med att stänga ner alla klienters sockets. Sedan
@@ -140,11 +165,11 @@ public abstract class Server implements MessageReceiver {
         }
     }
 
-    public ArrayList<String> getIPs(){
-        
+    public ArrayList<String> getIPs() {
+
         ArrayList<String> retList = new ArrayList();
- 
-        for(int i =0;i<myClients.size();i++){
+
+        for (int i = 0; i < myClients.size(); i++) {
             //System.out.println(myClients.get(i).getIP());
             retList.add(myClients.get(i).getIP());
         }
@@ -160,26 +185,37 @@ public abstract class Server implements MessageReceiver {
         return myClients.stream();
     }
 
-    public ClientRep getOwnerRep(){
+    public ClientRep getOwnerRep() {
         ClientRep ret = null;
-        for(int i = 0;i<myClients.size();i++){
-            if(myClients.get(i).isHost()){
+        for (int i = 0; i < myClients.size(); i++) {
+            if (myClients.get(i).isHost()) {
                 ret = myClients.get(i);
             }
-        
+
         }
-    return ret;
+        return ret;
     }
-    
-    public void removeRep(ClientRep rep){
+
+    public void removeRep(ClientRep rep) {
 
         /*
         Tar bort en klient från servern.
          */
-        
+
         myClients.remove(rep);
-        
+
     }
-    
+
+    public void registerServerEncryption(String algorithm) {
+        try {
+            this.messageConverter = new EncryptedMessageConverter(algorithm);
+            this.getClients().forEach(p -> {
+                p.registerMessageConverter(this.messageConverter.clone());
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public abstract void receive(Message message, ClientRep sender);
 }

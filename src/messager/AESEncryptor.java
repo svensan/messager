@@ -1,8 +1,13 @@
 package messager;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.SecureRandom;
 
 public class AESEncryptor extends Encryptor {
@@ -50,6 +55,35 @@ public class AESEncryptor extends Encryptor {
         }
 
         return null;
+    }
+
+    protected CipherInputStream getDecryptingInputStream(InputStream is, byte[] key) {
+        try {
+            SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+
+            return new CipherInputStream(is, cipher);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    protected CipherOutputStream getEncryptingOutputStream(OutputStream os, byte[] key) {
+        try {
+            SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+
+            return new CipherOutputStream(os, cipher);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 
     protected byte[] generateKey() {

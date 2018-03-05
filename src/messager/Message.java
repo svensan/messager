@@ -110,7 +110,6 @@ public class Message {
         return isKeyRequest;
     }
 
-    
     public boolean isConnectRequest(){
         
         return isConnectRequest;
@@ -119,7 +118,52 @@ public class Message {
     public void setConnectRequest(){
         isConnectRequest = true;
     }
+
     protected String getKeyRequestType() {
         return keyRequestType;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setIsFileRequest(boolean fileRequest) {
+        isFileRequest = fileRequest;
+    }
+
+    public void setFileRequest(FileRequest fileRequest) {
+        this.fileRequest = fileRequest;
+    }
+
+    public void setIsFileResponse(boolean fileResponse) {
+        isFileResponse = fileResponse;
+    }
+
+    public void setFileResponse(FileResponse fileResponse) {
+        this.fileResponse = fileResponse;
+    }
+
+    public void setIsKeyRequest(boolean keyRequest) {
+        isKeyRequest = keyRequest;
+    }
+
+    public void setKeyRequestType(String keyRequestType) {
+        this.keyRequestType = keyRequestType;
+    }
+
+    public void setDisconnect(boolean disconnect) {
+        this.disconnect = disconnect;
+    }
+
+    public void setConnectRequest(boolean connectRequest) {
+        isConnectRequest = connectRequest;
     }
 }

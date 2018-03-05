@@ -1,8 +1,9 @@
 package messager;
 
+import javax.xml.bind.DatatypeConverter;
 import java.awt.*;
 
-public abstract class AbstractMessageConverter implements MessageConverter{
+public abstract class AbstractMessageConverter implements Cloneable {
     /*
     Abstrakt klass för att konvertera message klassen till en sträng som kan
     skickas över streamen. Implementeras i ClientRep-klassen.
@@ -11,6 +12,8 @@ public abstract class AbstractMessageConverter implements MessageConverter{
     */
 
     public abstract String convertMessage(Message message);
+
+    public abstract AbstractMessageConverter clone();
 
     private String getHexColor(Color myColor) {
         /*
@@ -64,7 +67,7 @@ public abstract class AbstractMessageConverter implements MessageConverter{
 
         return String.format("<%1$2s>%2$s</%1$2s>", tagName, text);
     }
-    
+
     protected String getXMLFromMessage(Message message) {
 
         /*
@@ -75,8 +78,17 @@ public abstract class AbstractMessageConverter implements MessageConverter{
         if (message.isFileRequest()) {
             FileRequest req = message.getFileRequest();
 
-            String[] attributeName = {"name", "size"};
-            String[] attributeValue = {req.getFileName(), String.valueOf(req.getFileSize())};
+            String[] attributeName;
+            String[] attributeValue;
+
+            if (req.isUsingEncryption()) {
+                attributeName = new String[]{"name", "size", "key", "type"};
+                attributeValue = new String[]{req.getFileName(), String.valueOf(req.getFileSize()),
+                        DatatypeConverter.printHexBinary(req.getKey()), req.getType()};
+            } else {
+                attributeName = new String[]{"name", "size"};
+                attributeValue = new String[]{req.getFileName(), String.valueOf(req.getFileSize())};
+            }
 
             return addTagWithAttribute("filerequest", attributeName,
                     attributeValue, message.getText());
@@ -96,6 +108,8 @@ public abstract class AbstractMessageConverter implements MessageConverter{
                     attributeValue, message.getText());
         } else if (message.isConnectRequest()) {
             return addTagWithAttribute("request", message.getText());
+        } else if (message.isDisconnectMessage()) {
+            return "<disconnect/>";
         } else {
             String[] attributeName = {"color"};
             String[] attibuteValue = {this.getHexColor(message.getColor())};
@@ -103,16 +117,12 @@ public abstract class AbstractMessageConverter implements MessageConverter{
             String retText = convertXMLsymbols(message.getText());
 
             String ret = addTagWithAttribute("text", attributeName, attibuteValue, retText);
-            if(message.isDisconnectMessage()){
-                ret = ret+"<disconnect/>";
-            }
             return ret;
         }
     }
 
     private String convertXMLsymbols(String text) {
-        text = text.replaceAll(">","&gt;");
-        return text.replaceAll("<","&lt;");
+        text = text.replaceAll(">", "&gt;");
+        return text.replaceAll("<", "&lt;");
     }
-
 }

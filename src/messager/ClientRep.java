@@ -30,7 +30,7 @@ public class ClientRep {
     */
 
     private Encryptor encryption;
-    private MessageConverter messageConverter;
+    private AbstractMessageConverter messageConverter;
     private String encryptionType = "none";
     private Comm connection;
     private SAXParserFactory saxFactory = SAXParserFactory.newInstance();
@@ -40,6 +40,7 @@ public class ClientRep {
     byte[] key;
     String connectionAdress;
     boolean acceptedConnection = false;
+    private boolean haveSentConReq = false;
 
     public ClientRep(Socket connection, MessageReceiver messager)
             throws Exception {
@@ -53,6 +54,14 @@ public class ClientRep {
     public String toString() {
 
         return connection.getIP();
+    }
+
+    public boolean getHaveSentConReq() {
+        return haveSentConReq;
+    }
+
+    public void setHaveSentConReq(boolean b) {
+        haveSentConReq = b;
     }
 
     public Socket getSocket() {
@@ -105,7 +114,7 @@ public class ClientRep {
         isHost = b;
     }
 
-    public void registerMessageConverter(MessageConverter messageConverter) {
+    public void registerMessageConverter(AbstractMessageConverter messageConverter) {
         /*
         Registrerar hur vi ska konvertera medelanden från medelande-klassen 
         till strängar. I defaultfallet så gör vi
@@ -174,6 +183,13 @@ public class ClientRep {
         }
 
         return null;
+    }
+
+    private void handleKeyRequest() {
+        connection.putStringOnStream(
+                "<message name=\"DefaultAnswer\" color=\"#000000\"><encryption>This program does not support" +
+                        " asymmetric encryption.</encryption></message>"
+        );
     }
 
     protected String getConnectionAdress() {
@@ -287,7 +303,7 @@ public class ClientRep {
                 /*
                 Om kryptering inte används så sparar vi endast texten.
                  */
-                
+
                 textBuilder.append(this.convertXMLsymbols(new String(ch, start, length)));
                 pickUpText = true;
             }
@@ -316,6 +332,9 @@ public class ClientRep {
             exempel om vi får en text-tagg så skickar vi det till text-taggs
             hanteraren.
              */
+            if (tagName.equalsIgnoreCase("keyrequest")) {
+                ClientRep.this.handleKeyRequest();
+            }
 
             if (tagName.equalsIgnoreCase("message")) {
                 this.handleMessageTag(attributes);
@@ -328,6 +347,7 @@ public class ClientRep {
             if (tagName.equalsIgnoreCase("disconnect")) {
                 System.out.print("disc tag detected");
                 this.messageIsDisconnect = true;
+                this.text = "I'm out";
             }
 
             if (tagName.equalsIgnoreCase("encrypted")) {
@@ -388,8 +408,15 @@ public class ClientRep {
 
             String fileName = attributes.getValue("name");
             int fileSize = Integer.valueOf(attributes.getValue("size"));
+            String hexKey = attributes.getValue("key");
+            String type = attributes.getValue("type");
 
-            fileRequest = new FileRequest(fileName, fileSize);
+            if (type != null) {
+                fileRequest = new FileRequest(fileName, fileSize,
+                        DatatypeConverter.parseHexBinary(hexKey), type);
+            } else {
+                fileRequest = new FileRequest(fileName, fileSize);
+            }
             messageContainsFileRequest = true;
         }
 
@@ -443,8 +470,8 @@ public class ClientRep {
         }
 
         private String convertXMLsymbols(String text) {
-            text = text.replaceAll("&gt;",">");
-            return text.replaceAll("&lt;","<");
+            text = text.replaceAll("&gt;", ">");
+            return text.replaceAll("&lt;", "<");
         }
 
     }

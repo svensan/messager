@@ -18,7 +18,7 @@ public class Comm implements Runnable {
     
     TODO SVEN kommentera
     */
-    
+
     private MessageReceiver receiver;
     private Socket myConnection;
     private PrintWriter output;
@@ -43,11 +43,11 @@ public class Comm implements Runnable {
         runThread.start();
     }
 
-    public Socket getSocket(){
+    public Socket getSocket() {
         return myConnection;
     }
-    
-    public String getIP(){
+
+    public String getIP() {
         String retIP = myConnection.getInetAddress().toString().substring(1);
         return retIP;
     }
@@ -77,26 +77,39 @@ public class Comm implements Runnable {
             handle the inputstring, sending the message up in the class
             hierarchy.
             */
-            try {          
+            try {
                 //System.out.println("1 ");
                 System.out.flush();
                 String stringMessage = input.readLine();
                 if (stringMessage == null) {
-                    throw new RuntimeException("Peer dead");
+                    /*
+                    Om connectionen bryts så stänger vi för att undvika galna
+                    exceptions. Ifall servern märker att någon droppat så tas
+                    de ur klient listan, så de kan ansluta igen eller så.
+                    */
+                    this.close();
+                    if(receiver instanceof Server|| receiver instanceof
+                            ServerMultipart){
+                        Server sReceiver = (Server)receiver;
+                        sReceiver.removeRep(this.myOwner);
+                    }
+                    System.out.println("Peer dead.");
+
                 }
                 //System.out.println("2 " + stringMessage);
                 System.out.flush();
                 sleep(10);
                 Message message = myOwner.handleInputMessage(stringMessage);
+
                 receiveMessage(message);
                 System.out.flush();
-            } catch(SocketException e){
+            } catch (SocketException e) {
                 /*
                 Har o göra med disconnecten för o undvika trådlås typ ?
                 */
                 System.out.println("just as planned");
-            }
-            catch (Exception e) {
+                this.close();
+            } catch (Exception e) {
                 this.close();
                 e.printStackTrace();
             }
@@ -109,7 +122,8 @@ public class Comm implements Runnable {
          */
         try {
             Thread.sleep(sleepInterval);
-        } catch (InterruptedException e) { }
+        } catch (InterruptedException e) {
+        }
     }
 
     private void receiveMessage(Message message) {
@@ -126,7 +140,7 @@ public class Comm implements Runnable {
         */
         output.println(message);
         output.flush();
-       // System.out.println("test comm - sent " + message);
+        // System.out.println("test comm - sent " + message);
         System.out.flush();
     }
 
@@ -139,7 +153,7 @@ public class Comm implements Runnable {
         this.receiver = messager;
     }
 
-    public boolean getRunning(){
+    public boolean getRunning() {
         /*
         Kollar om den lyssnar
         */
@@ -157,16 +171,16 @@ public class Comm implements Runnable {
 
             myConnection.close();
 
-            try{
-            input.close();
+            try {
+                input.close();
 
-            output.close();
+                output.close();
 
-            }catch(SocketException e){
+            } catch (SocketException e) {
                 System.out.println("fackit");
-                
+
             }
-            
+
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -47,4 +47,14 @@ public class EncryptedMessageConverter extends AbstractMessageConverter {
         this.algorithm = algorithm;
     }
 
+    public AbstractMessageConverter clone() {
+        try {
+            return new EncryptedMessageConverter(this.algorithm);
+        } catch(Exception e) {
+            e.printStackTrace();
+            System.err.println("Could not clone messageConverter, you get default.");
+            return new DefaultMessageConverter();
+        }
+    }
+
 }

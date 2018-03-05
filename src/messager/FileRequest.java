@@ -9,10 +9,21 @@ public class FileRequest {
 
     private int fileSize;
     private String fileName;
+    private String type;
+    private byte[] key;
+    private boolean usingEncryption;
 
     public FileRequest(String fileName, int fileSize) {
         this.fileName = fileName;
         this.fileSize = fileSize;
+    }
+
+    public FileRequest(String fileName, int fileSize, byte[] key, String type) {
+        this(fileName, fileSize);
+        this.key = key;
+        this.type = type;
+
+        usingEncryption = true;
     }
 
     public int getFileSize() {
@@ -23,4 +34,15 @@ public class FileRequest {
         return fileName;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public byte[] getKey() {
+        return key;
+    }
+
+    public boolean isUsingEncryption() {
+        return usingEncryption;
+    }
 }

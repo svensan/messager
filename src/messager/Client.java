@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Client implements MessageReceiver {
+public class Client implements MessageReceiver, Runnable {
     /*
     Även om linjerna blivit lite blurry i det här projektet skulle man kunna
     kalla klienten för en kontroller. Den tar hand om data och skickar den 
@@ -26,12 +26,16 @@ public class Client implements MessageReceiver {
     Color textColor;
     private ServerMultipart server;
     private String connectedIP;
+    private MessageFactory messageFactory;
 
     private int sentFilePort;//oanvända ?
     private int sentFileSize;
     private String sentFileName;
     private String sentFilePath;
+
+    private boolean usingEncryption = false;
     private String type;
+    private byte[] key;
     private boolean delayedEncryption;
 
     private boolean waitingForFile;
@@ -41,6 +45,7 @@ public class Client implements MessageReceiver {
         /*
         konstruktor, inget spännande.
         */
+        messageFactory = new MessageFactory();
         haveSetName = false;
         isAdmin = admin;
         textColor = black;
@@ -87,6 +92,7 @@ public class Client implements MessageReceiver {
 
     public void setColor(Color aC) {
 
+        messageFactory.setColor(aC);
         textColor = aC;
     }
 
@@ -156,7 +162,7 @@ public class Client implements MessageReceiver {
                         Message request = new Message(Color.BLACK,
                                 this.name, "hey man id like to connect");
                         request.setConnectRequest();
-                        sendMessage(request);
+                        //sendMessage(request);
                     }
 
 
@@ -177,6 +183,7 @@ public class Client implements MessageReceiver {
     }
 
     public void setName(String name) {
+        messageFactory.setSenderName(name);
         this.name = name;
         haveSetName = true;
     }
@@ -189,12 +196,21 @@ public class Client implements MessageReceiver {
         /*
         Olika sub-metoder för om användaren är admin eller ej
         */
+
+        if (message.getFileRequest().isUsingEncryption()) {
+            this.key = message.getFileRequest().getKey();
+            this.type = message.getFileRequest().getType();
+        }
+
         waitingForFile = true;
         if (this.isAdmin) {
             sendServerFileRequest(message, IP);
         } else {
             sendClientFileRequest(message, IP);
         }
+
+        Thread t = new Thread(this);
+        t.start();
 
     }
 
@@ -231,14 +247,26 @@ public class Client implements MessageReceiver {
         if (message.isFileRequest()) {
             System.out.println("ay wtf");
 
-            window.createReceiveWindow(message.getFileRequest().getFileName(),
-                    message.getSenderName(),
-                    message.getFileRequest().getFileSize(), ip,
+            window.createReceiveWindow(message.getFileRequest(), message.getSenderName(), connectedIP,
                     message.getText());
+/*
+            if (message.getFileRequest().isUsingEncryption()) {
+                window.createReceiveWindow(message.getFileRequest().getFileName(),
+                        message.getSenderName(),
+                        message.getFileRequest().getFileSize(), connectedIP,
+                        message.getText(),
+                        message.getFileRequest().getKey(), message.getFileRequest().getType());
+            } else {
+                window.createReceiveWindow(message.getFileRequest().getFileName(),
+                        message.getSenderName(),
+                        message.getFileRequest().getFileSize(), ip,
+                        message.getText());
+            }
+*/
         }
 
 
-        }
+    }
 
     public void receive(Message message, ClientRep sender) {
         /*
@@ -259,10 +287,18 @@ public class Client implements MessageReceiver {
             TODO kolla om detta används
             */
             System.out.println("ay wtf");
-            window.createReceiveWindow(message.getFileRequest().getFileName(),
-                    message.getSenderName(),
-                    message.getFileRequest().getFileSize(), connectedIP,
-                    message.getText());
+            if (message.getFileRequest().isUsingEncryption()) {
+                window.createReceiveWindow(message.getFileRequest().getFileName(),
+                        message.getSenderName(),
+                        message.getFileRequest().getFileSize(), connectedIP,
+                        message.getText(),
+                        message.getFileRequest().getKey(), message.getFileRequest().getType());
+            } else {
+                window.createReceiveWindow(message.getFileRequest().getFileName(),
+                        message.getSenderName(),
+                        message.getFileRequest().getFileSize(), connectedIP,
+                        message.getText());
+            }
 
         }
         if (message.isFileResponse() &&
@@ -275,8 +311,15 @@ public class Client implements MessageReceiver {
             */
             waitingForFile = false;
             try {
-                FileSender sendo = new FileSender(
-                        message.getFileResponse().getPort(), sentFilePath);
+                if (message.getFileResponse().acceptedFileRequest()) {
+                    if (usingEncryption) {
+                        FileSender sendo = new FileSender(
+                                message.getFileResponse().getPort(), sentFilePath, key, type);
+                    } else {
+                        FileSender sendo = new FileSender(
+                                message.getFileResponse().getPort(), sentFilePath);
+                    }
+                }
             } catch (IOException ex) {
                 Logger.getLogger(
                         Client.class.getName()).log(Level.SEVERE, null, ex);
@@ -304,9 +347,17 @@ public class Client implements MessageReceiver {
         }
 
         if (type.equalsIgnoreCase("AES") || type.equalsIgnoreCase("Caesar")) {
+            usingEncryption = true;
+
             try {
                 System.out.println(myRepresentation);
+
+                if (isAdmin) {
+                    this.server.registerServerEncryption(type);
+                }
                 this.myRepresentation.registerMessageConverter(new EncryptedMessageConverter(type));
+
+                //this.sendMessage();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -330,5 +381,31 @@ public class Client implements MessageReceiver {
 
     public ChatWindow getWindow() {
         return window;
+    }
+
+    public boolean isUsingEncryption() {
+        return usingEncryption;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public byte[] getKey() {
+        return key;
+    }
+
+    public void run() {
+        try {
+            Thread.sleep(60000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (waitingForFile) {
+            Message noAnswer = messageFactory.getChatError("Receipient did not answer filerequest in 60 s.");
+            window.handleMessage(noAnswer);
+            waitingForFile = false;
+        }
     }
 }
