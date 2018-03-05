@@ -285,7 +285,8 @@ public class ClientRep {
                     isEncrypted = false;
                     String encryptedStringMessage = new String(ch, start, length);
 
-                    byte[] encryptedBytes = DatatypeConverter.parseHexBinary(encryptedStringMessage);
+                    byte[] encryptedBytes = DatatypeConverter.parseHexBinary(
+                            encryptedStringMessage);
 
                     Encryptor encryptor = encryptionFactory.getEncryptor(type);
                     byte[] decryptedBytes =
@@ -304,7 +305,8 @@ public class ClientRep {
                 Om kryptering inte används så sparar vi endast texten.
                  */
 
-                textBuilder.append(this.convertXMLsymbols(new String(ch, start, length)));
+                textBuilder.append(this.convertXMLsymbols(new String(
+                        ch, start, length)));
                 pickUpText = true;
             }
         }
@@ -387,7 +389,8 @@ public class ClientRep {
 
             isEncrypted = true;
             type = attributes.getValue("type");
-            key = DatatypeConverter.parseHexBinary(attributes.getValue("key"));
+            key = DatatypeConverter.parseHexBinary(attributes.getValue(
+                    "key"));
         }
 
         private void handleMessageTag(Attributes attributes) {
@@ -430,7 +433,8 @@ public class ClientRep {
              */
 
             boolean acceptedFileRequest =
-                    attributes.getValue("reply").equalsIgnoreCase("yes");
+                    attributes.getValue("reply").equalsIgnoreCase(
+                            "yes");
 
             int port = Integer.valueOf(attributes.getValue("port"));
 

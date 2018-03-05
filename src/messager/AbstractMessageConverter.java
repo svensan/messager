@@ -26,7 +26,8 @@ public abstract class AbstractMessageConverter implements Cloneable {
         return String.format("#%02X%02X%02X", r, g, b);
     }
 
-    protected String addTagWithAttribute(String tagName, String[] attributeName, String[] attributeValue, String text) {
+    protected String addTagWithAttribute(String tagName, String[] attributeName,
+                                         String[] attributeValue, String text) {
         /*
         Skapar XML-kod om en vet tagnamn, attributnamn, attributvärden och vilken text som ska stå innuti taggen.
          */
@@ -50,7 +51,8 @@ public abstract class AbstractMessageConverter implements Cloneable {
         return String.format("<%1$2s%2$2s>%3$2s</%1$2s>", tagName, attributeString, text);
     }
 
-    protected String addTagWithAttribute(String tagName, String attributeName, String attributeValue, String text) {
+    protected String addTagWithAttribute(String tagName, String attributeName,
+                                         String attributeValue, String text) {
 
         /*
         En till klass som skapar XML-kod, denna funkar dock endast om vi bara har ETT attribut.
@@ -71,7 +73,8 @@ public abstract class AbstractMessageConverter implements Cloneable {
     protected String getXMLFromMessage(Message message) {
 
         /*
-        Denna metod är en sammansättning av de tidigare metoderna. Den känner igen de typer av medelanden som vi ska kunna
+        Denna metod är en sammansättning av de tidigare metoderna. Den känner
+        igen de typer av medelanden som vi ska kunna
         konvertera till XML, och sedan skapar den fungerande XML av dem.
          */
 
@@ -116,7 +119,8 @@ public abstract class AbstractMessageConverter implements Cloneable {
 
             String retText = convertXMLsymbols(message.getText());
 
-            String ret = addTagWithAttribute("text", attributeName, attibuteValue, retText);
+            String ret = addTagWithAttribute("text", attributeName,
+                    attibuteValue, retText);
             return ret;
         }
     }
