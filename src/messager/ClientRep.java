@@ -348,6 +348,7 @@ public class ClientRep {
                 System.out.print("disc tag detected");
                 this.messageIsDisconnect = true;
                 this.text = "I'm out";
+                this.color = Color.RED;
             }
 
             if (tagName.equalsIgnoreCase("encrypted")) {

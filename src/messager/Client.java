@@ -80,14 +80,27 @@ public class Client implements MessageReceiver, Runnable {
         
         */
         //System.out.println("WAKE ME UP");
-        Message discM = new Message(textColor, name, "Im out lol", true);
-        sendMessage(discM);
+        if (this.isAdmin) {
+            Message adminDiscM = new Message(Color.red, name, "I'm out, and I'm host so you're going to lose your " +
+                    "connection.");
+
+            Message discM = new Message(textColor, name, "Im out lol", true);
+
+            sendMessage(adminDiscM);
+            sendMessage(discM);
+        } else {
+            Message discM = new Message(textColor, name, "Im out lol", true);
+            sendMessage(discM);
+        }
         try {
-            Thread.sleep(5);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
         }
 
         myRepresentation.closeConnection();
+        if (this.isAdmin) {
+            myRepresentation.closeConnection();
+        }
     }
 
     public void setColor(Color aC) {
@@ -162,7 +175,7 @@ public class Client implements MessageReceiver, Runnable {
                         Message request = new Message(Color.BLACK,
                                 this.name, "hey man id like to connect");
                         request.setConnectRequest();
-                        //sendMessage(request);
+                        sendMessage(request);
                     }
 
 
@@ -363,6 +376,9 @@ public class Client implements MessageReceiver, Runnable {
             }
 
         } else if (type.equalsIgnoreCase("none")) {
+            if (isAdmin) {
+                this.server.registerServerEncryption(type);
+            }
             this.myRepresentation.registerMessageConverter(new DefaultMessageConverter());
         } else {
 

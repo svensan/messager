@@ -71,6 +71,7 @@ public class MainMenu{
                 public void actionPerformed(ActionEvent e) {
                     // stänger programmet
                     mainFrame.dispose();
+                    System.exit(0);
                 }
             }
             );
@@ -246,6 +247,8 @@ public class MainMenu{
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     hMainFrame.dispose();
+                    System.out.println("LOGG: We disposed the mainMenu, now trying to exit the system.");
+                    System.exit(0);
                 }
             }
             );

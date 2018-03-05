@@ -92,7 +92,7 @@ public abstract class Server implements MessageReceiver {
                 newClient.registerMessageConverter(clientMessageConverter);
             }
 
-            Thread t = new Thread(()->{
+            Thread t = new Thread(() -> {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -104,7 +104,8 @@ public abstract class Server implements MessageReceiver {
                     Message deniedMessage = new Message(BLACK, "Server", "Your "
                             + "client seems like garbage fam i wont lie");
                     this.sendMessage(deniedMessage, newClient);
-                }});
+                }
+            });
 
             t.start();
 
@@ -159,7 +160,7 @@ public abstract class Server implements MessageReceiver {
         }
         try {
             server.close();
-            System.exit(0);
+            //System.exit(0);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -207,13 +208,21 @@ public abstract class Server implements MessageReceiver {
     }
 
     public void registerServerEncryption(String algorithm) {
-        try {
-            this.messageConverter = new EncryptedMessageConverter(algorithm);
+
+        if (algorithm.equalsIgnoreCase("Caesar") || algorithm.equalsIgnoreCase("AES")) {
+            try {
+                this.messageConverter = new EncryptedMessageConverter(algorithm);
+                this.getClients().forEach(p -> {
+                    p.registerMessageConverter(this.messageConverter.clone());
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (algorithm.equalsIgnoreCase("none")) {
+            this.messageConverter = new DefaultMessageConverter();
             this.getClients().forEach(p -> {
                 p.registerMessageConverter(this.messageConverter.clone());
             });
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

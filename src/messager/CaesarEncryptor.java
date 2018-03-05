@@ -1,7 +1,5 @@
 package messager;
 
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Random;

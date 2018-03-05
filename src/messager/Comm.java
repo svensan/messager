@@ -88,21 +88,22 @@ public class Comm implements Runnable {
                     de ur klient listan, så de kan ansluta igen eller så.
                     */
                     this.close();
-                    if(receiver instanceof Server|| receiver instanceof
-                            ServerMultipart){
-                        Server sReceiver = (Server)receiver;
+                    if (receiver instanceof Server || receiver instanceof
+                            ServerMultipart) {
+                        Server sReceiver = (Server) receiver;
                         sReceiver.removeRep(this.myOwner);
                     }
                     System.out.println("Peer dead.");
 
-                }
-                //System.out.println("2 " + stringMessage);
-                System.out.flush();
-                sleep(10);
-                Message message = myOwner.handleInputMessage(stringMessage);
+                } else {
+                    //System.out.println("2 " + stringMessage);
+                    System.out.flush();
+                    sleep(10);
+                    Message message = myOwner.handleInputMessage(stringMessage);
 
-                receiveMessage(message);
-                System.out.flush();
+                    receiveMessage(message);
+                    System.out.flush();
+                }
             } catch (SocketException e) {
                 /*
                 Har o göra med disconnecten för o undvika trådlås typ ?
